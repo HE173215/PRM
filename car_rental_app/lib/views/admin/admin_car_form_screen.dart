@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+
 import '../../models/car_model.dart';
 import '../../services/car_service.dart';
 import '../../utils/app_colors.dart';
@@ -49,9 +50,15 @@ class _AdminCarFormScreenState extends State<AdminCarFormScreen> {
     seatsController = TextEditingController(
       text: car != null ? car.seats.toString() : '5',
     );
-    locationController = TextEditingController(text: car?.location ?? 'Hồ Chí Minh');
-    licensePlateController = TextEditingController(text: car?.licensePlate ?? '');
-    yearController = TextEditingController(text: car != null ? car.year.toString() : '2023');
+    locationController = TextEditingController(
+      text: car?.location ?? 'Hồ Chí Minh',
+    );
+    licensePlateController = TextEditingController(
+      text: car?.licensePlate ?? '',
+    );
+    yearController = TextEditingController(
+      text: car != null ? car.year.toString() : '2023',
+    );
     imageController = TextEditingController(text: car?.image ?? '');
     descriptionController = TextEditingController(text: car?.description ?? '');
 
@@ -120,7 +127,9 @@ class _AdminCarFormScreenState extends State<AdminCarFormScreen> {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(
-            widget.car == null ? 'Thêm xe mới thành công' : 'Cập nhật xe thành công',
+            widget.car == null
+                ? 'Thêm xe mới thành công'
+                : 'Cập nhật xe thành công',
           ),
           backgroundColor: AppColors.emerald,
         ),
@@ -173,7 +182,9 @@ class _AdminCarFormScreenState extends State<AdminCarFormScreen> {
                 label: 'Tên xe *',
                 hintText: 'Ví dụ: VinFast VF8, Mazda CX-5',
                 prefixIcon: Icons.directions_car_rounded,
-                validator: (val) => val == null || val.trim().isEmpty ? 'Vui lòng nhập tên xe' : null,
+                validator: (val) => val == null || val.trim().isEmpty
+                    ? 'Vui lòng nhập tên xe'
+                    : null,
               ),
               const SizedBox(height: 16),
 
@@ -185,7 +196,9 @@ class _AdminCarFormScreenState extends State<AdminCarFormScreen> {
                       label: 'Hãng xe *',
                       hintText: 'VinFast, Toyota...',
                       prefixIcon: Icons.business_rounded,
-                      validator: (val) => val == null || val.trim().isEmpty ? 'Nhập hãng xe' : null,
+                      validator: (val) => val == null || val.trim().isEmpty
+                          ? 'Nhập hãng xe'
+                          : null,
                     ),
                   ),
                   const SizedBox(width: 14),
@@ -197,7 +210,8 @@ class _AdminCarFormScreenState extends State<AdminCarFormScreen> {
                       prefixIcon: Icons.attach_money_rounded,
                       keyboardType: TextInputType.number,
                       validator: (val) {
-                        if (val == null || val.trim().isEmpty) return 'Nhập giá thuê';
+                        if (val == null || val.trim().isEmpty)
+                          return 'Nhập giá thuê';
                         final num = double.tryParse(val.trim());
                         if (num == null || num <= 0) return 'Giá phải > 0';
                         return null;
@@ -293,7 +307,9 @@ class _AdminCarFormScreenState extends State<AdminCarFormScreen> {
                 label: 'Địa điểm giao xe *',
                 hintText: 'Quận 1, Hồ Chí Minh...',
                 prefixIcon: Icons.location_on_outlined,
-                validator: (val) => val == null || val.trim().isEmpty ? 'Nhập địa điểm giao xe' : null,
+                validator: (val) => val == null || val.trim().isEmpty
+                    ? 'Nhập địa điểm giao xe'
+                    : null,
               ),
               const SizedBox(height: 16),
 
@@ -316,7 +332,8 @@ class _AdminCarFormScreenState extends State<AdminCarFormScreen> {
               CustomTextField(
                 controller: descriptionController,
                 label: 'Mô tả chi tiết',
-                hintText: 'Thông tin tiện nghi, cảm giác lái, ưu đãi kèm theo...',
+                hintText:
+                    'Thông tin tiện nghi, cảm giác lái, ưu đãi kèm theo...',
                 maxLines: 4,
               ),
               const SizedBox(height: 32),
@@ -366,7 +383,7 @@ class _AdminCarFormScreenState extends State<AdminCarFormScreen> {
         ),
         const SizedBox(height: 8),
         DropdownButtonFormField<String>(
-          value: items.contains(value) ? value : items.first,
+          initialValue: items.contains(value) ? value : items.first,
           decoration: const InputDecoration(
             contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 14),
           ),
@@ -376,7 +393,10 @@ class _AdminCarFormScreenState extends State<AdminCarFormScreen> {
               value: item,
               child: Text(
                 itemLabel != null ? itemLabel(item) : item,
-                style: const TextStyle(fontSize: 14, color: AppColors.textPrimary),
+                style: const TextStyle(
+                  fontSize: 14,
+                  color: AppColors.textPrimary,
+                ),
               ),
             );
           }).toList(),

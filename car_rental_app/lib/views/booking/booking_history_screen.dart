@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+
 import '../../models/booking_model.dart';
 import '../../services/booking_service.dart';
 import '../../utils/app_colors.dart';
@@ -99,13 +100,17 @@ class _BookingHistoryScreenState extends State<BookingHistoryScreen> {
         automaticallyImplyLeading: !widget.isTab,
         leading: !widget.isTab
             ? IconButton(
-                icon: const Icon(Icons.arrow_back_ios_new_rounded, size: 20),
+                icon: const Icon(Icons.arrow_back_ios_new_rounded, size: 18),
                 onPressed: () => Navigator.pop(context),
               )
             : null,
         title: const Text(
-          'Đơn thuê của tôi',
-          style: TextStyle(fontWeight: FontWeight.w800, fontSize: 20),
+          'CHUYẾN ĐI CỦA TÔI',
+          style: TextStyle(
+            fontWeight: FontWeight.w900,
+            fontSize: 18,
+            letterSpacing: 0.5,
+          ),
         ),
         actions: [
           IconButton(
@@ -117,42 +122,50 @@ class _BookingHistoryScreenState extends State<BookingHistoryScreen> {
       ),
       body: Column(
         children: [
-          // Horizontal status filter chips
+          // Horizontal status filter pills
           SizedBox(
-            height: 48,
+            height: 44,
             child: ListView.builder(
-              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 4),
+              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 2),
               scrollDirection: Axis.horizontal,
               itemCount: filters.length,
               itemBuilder: (context, index) {
                 final filter = filters[index];
                 final isSelected = selectedFilter == filter;
                 return Padding(
-                  padding: const EdgeInsets.only(right: 10),
-                  child: FilterChip(
-                    label: Text(filter),
-                    selected: isSelected,
-                    showCheckmark: false,
-                    backgroundColor: AppColors.surface,
-                    selectedColor: AppColors.primary,
-                    side: BorderSide(
-                      color: isSelected
-                          ? AppColors.primaryLight
-                          : AppColors.surfaceBorder,
-                    ),
-                    labelStyle: TextStyle(
-                      fontSize: 13,
-                      fontWeight: isSelected ? FontWeight.bold : FontWeight.w500,
-                      color: isSelected ? Colors.white : AppColors.textSecondary,
-                    ),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                    onSelected: (_) {
+                  padding: const EdgeInsets.only(right: 8),
+                  child: GestureDetector(
+                    onTap: () {
                       setState(() {
                         selectedFilter = filter;
                       });
                     },
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 14),
+                      alignment: Alignment.center,
+                      decoration: BoxDecoration(
+                        color: isSelected
+                            ? AppColors.primary
+                            : AppColors.surface,
+                        borderRadius: BorderRadius.circular(10),
+                        border: Border.all(
+                          color: isSelected
+                              ? AppColors.primary
+                              : AppColors.surfaceBorder,
+                        ),
+                      ),
+                      child: Text(
+                        filter.toUpperCase(),
+                        style: TextStyle(
+                          fontSize: 11,
+                          fontWeight: FontWeight.w900,
+                          letterSpacing: 0.5,
+                          color: isSelected
+                              ? Colors.white
+                              : AppColors.textSecondary,
+                        ),
+                      ),
+                    ),
                   ),
                 );
               },
@@ -160,7 +173,6 @@ class _BookingHistoryScreenState extends State<BookingHistoryScreen> {
           ),
           const SizedBox(height: 8),
 
-          // Content
           Expanded(child: buildBody(filtered)),
         ],
       ),
@@ -170,7 +182,7 @@ class _BookingHistoryScreenState extends State<BookingHistoryScreen> {
   Widget buildBody(List<BookingModel> filtered) {
     if (isLoading) {
       return const Center(
-        child: CircularProgressIndicator(color: AppColors.secondary),
+        child: CircularProgressIndicator(color: AppColors.primary),
       );
     }
 
@@ -188,9 +200,9 @@ class _BookingHistoryScreenState extends State<BookingHistoryScreen> {
       return EmptyStateWidget(
         icon: Icons.receipt_long_outlined,
         title: selectedFilter == 'Tất cả'
-            ? 'Bạn chưa có đơn thuê nào'
-            : 'Không có đơn thuê "$selectedFilter"',
-        message: 'Hãy chọn xe bạn ưng ý và đặt ngay để bắt đầu hành trình!',
+            ? 'Chưa có chuyến đi nào'
+            : 'Không có đơn "$selectedFilter"',
+        message: 'Hãy chọn mẫu xe yêu thích và đặt lịch để trải nghiệm ngay hôm nay!',
         buttonText: selectedFilter != 'Tất cả' ? 'Xem tất cả đơn' : null,
         onButtonPressed: selectedFilter != 'Tất cả'
             ? () {
@@ -204,7 +216,7 @@ class _BookingHistoryScreenState extends State<BookingHistoryScreen> {
 
     return RefreshIndicator(
       onRefresh: loadBookings,
-      color: AppColors.secondary,
+      color: AppColors.primary,
       backgroundColor: AppColors.surface,
       child: ListView.builder(
         padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
@@ -224,13 +236,6 @@ class _BookingHistoryScreenState extends State<BookingHistoryScreen> {
         color: AppColors.surface,
         borderRadius: BorderRadius.circular(18),
         border: Border.all(color: AppColors.surfaceBorder),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withAlpha(30),
-            blurRadius: 10,
-            offset: const Offset(0, 4),
-          ),
-        ],
       ),
       child: Material(
         color: Colors.transparent,
@@ -250,7 +255,6 @@ class _BookingHistoryScreenState extends State<BookingHistoryScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                // Top row: Car info & Status
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
@@ -262,8 +266,8 @@ class _BookingHistoryScreenState extends State<BookingHistoryScreen> {
                             child: booking.car.image.isNotEmpty
                                 ? Image.network(
                                     booking.car.image,
-                                    width: 48,
-                                    height: 48,
+                                    width: 52,
+                                    height: 52,
                                     fit: BoxFit.cover,
                                     errorBuilder: (_, _, _) => _carIcon(),
                                   )
@@ -278,18 +282,21 @@ class _BookingHistoryScreenState extends State<BookingHistoryScreen> {
                                   booking.car.name,
                                   style: const TextStyle(
                                     fontSize: 16,
-                                    fontWeight: FontWeight.bold,
+                                    fontWeight: FontWeight.w900,
                                     color: AppColors.textPrimary,
+                                    letterSpacing: -0.3,
                                   ),
                                   maxLines: 1,
                                   overflow: TextOverflow.ellipsis,
                                 ),
-                                const SizedBox(height: 2),
+                                const SizedBox(height: 3),
                                 Text(
-                                  'Mã đơn: #${booking.id.length > 8 ? booking.id.substring(booking.id.length - 8) : booking.id}',
+                                  'ID // #${booking.id.length > 8 ? booking.id.substring(booking.id.length - 8).toUpperCase() : booking.id.toUpperCase()}',
                                   style: const TextStyle(
-                                    fontSize: 11,
+                                    fontSize: 10,
+                                    fontWeight: FontWeight.w800,
                                     color: AppColors.textMuted,
+                                    letterSpacing: 0.5,
                                   ),
                                 ),
                               ],
@@ -305,84 +312,74 @@ class _BookingHistoryScreenState extends State<BookingHistoryScreen> {
                 const Divider(height: 1, color: AppColors.surfaceBorder),
                 const SizedBox(height: 14),
 
-                // Middle: Dates
                 Row(
                   children: [
                     const Icon(
-                      Icons.date_range_rounded,
-                      size: 16,
-                      color: AppColors.secondary,
+                      Icons.calendar_month_rounded,
+                      size: 15,
+                      color: AppColors.primary,
                     ),
                     const SizedBox(width: 6),
                     Text(
                       '${formatDate(booking.startDate)} → ${formatDate(booking.endDate)}',
                       style: const TextStyle(
                         fontSize: 13,
-                        color: AppColors.textSecondary,
-                        fontWeight: FontWeight.w500,
+                        color: AppColors.textPrimary,
+                        fontWeight: FontWeight.w700,
                       ),
                     ),
                     const Spacer(),
                     Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 8,
+                        vertical: 3,
+                      ),
                       decoration: BoxDecoration(
                         color: AppColors.surfaceLight,
                         borderRadius: BorderRadius.circular(6),
+                        border: Border.all(color: AppColors.surfaceBorder),
                       ),
                       child: Text(
-                        '${booking.totalDays} ngày',
+                        '${booking.totalDays} NGÀY',
                         style: const TextStyle(
-                          fontSize: 11,
-                          fontWeight: FontWeight.w600,
-                          color: AppColors.textSecondary,
+                          fontSize: 10,
+                          fontWeight: FontWeight.w900,
+                          color: AppColors.secondary,
                         ),
                       ),
                     ),
                   ],
                 ),
-                const SizedBox(height: 12),
+                const SizedBox(height: 14),
 
-                // Bottom: Price & Arrow
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    RichText(
-                      text: TextSpan(
-                        children: [
-                          const TextSpan(
-                            text: 'Tổng: ',
-                            style: TextStyle(
-                              fontSize: 12,
-                              color: AppColors.textMuted,
-                            ),
-                          ),
-                          TextSpan(
-                            text: CurrencyFormatter.format(booking.totalAmount),
-                            style: const TextStyle(
-                              fontSize: 16,
-                              fontWeight: FontWeight.w800,
-                              color: AppColors.secondary,
-                            ),
-                          ),
-                        ],
+                    Text(
+                      CurrencyFormatter.format(booking.totalAmount),
+                      style: const TextStyle(
+                        fontSize: 17,
+                        fontWeight: FontWeight.w900,
+                        color: AppColors.primary,
                       ),
                     ),
                     const Row(
                       mainAxisSize: MainAxisSize.min,
                       children: [
                         Text(
-                          'Chi tiết',
+                          'XEM CHI TIẾT',
                           style: TextStyle(
-                            fontSize: 12,
-                            fontWeight: FontWeight.bold,
-                            color: AppColors.primaryLight,
+                            fontSize: 11,
+                            fontWeight: FontWeight.w900,
+                            color: AppColors.textPrimary,
+                            letterSpacing: 0.5,
                           ),
                         ),
-                        SizedBox(width: 2),
+                        SizedBox(width: 4),
                         Icon(
-                          Icons.arrow_forward_ios_rounded,
-                          size: 11,
-                          color: AppColors.primaryLight,
+                          Icons.north_east_rounded,
+                          size: 13,
+                          color: AppColors.primary,
                         ),
                       ],
                     ),
@@ -398,8 +395,8 @@ class _BookingHistoryScreenState extends State<BookingHistoryScreen> {
 
   Widget _carIcon() {
     return Container(
-      width: 48,
-      height: 48,
+      width: 52,
+      height: 52,
       color: AppColors.surfaceLight,
       child: const Icon(
         Icons.directions_car_rounded,

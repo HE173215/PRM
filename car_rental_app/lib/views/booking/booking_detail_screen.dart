@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+
 import '../../models/booking_model.dart';
 import '../../services/booking_service.dart';
 import '../../utils/app_colors.dart';
@@ -168,7 +169,9 @@ class _BookingDetailScreenState extends State<BookingDetailScreen> {
       );
     }
 
-    final canCancel = data.status == 'pending' || data.status == 'confirmed';
+    final canCancel =
+        (data.status == 'pending' || data.status == 'confirmed') &&
+        data.paymentStatus.toLowerCase() != 'paid';
 
     return SingleChildScrollView(
       padding: const EdgeInsets.fromLTRB(20, 10, 20, 40),
@@ -325,7 +328,10 @@ class _BookingDetailScreenState extends State<BookingDetailScreen> {
                   ),
                 ),
                 const SizedBox(height: 14),
-                _infoRow('Giá thuê', CurrencyFormatter.formatPerDay(data.pricePerDay)),
+                _infoRow(
+                  'Giá thuê',
+                  CurrencyFormatter.formatPerDay(data.pricePerDay),
+                ),
                 const SizedBox(height: 10),
                 _infoRow('Số ngày', '${data.totalDays} ngày'),
                 const SizedBox(height: 10),
@@ -336,7 +342,10 @@ class _BookingDetailScreenState extends State<BookingDetailScreen> {
                   children: [
                     const Text(
                       'Trạng thái thanh toán',
-                      style: TextStyle(fontSize: 13, color: AppColors.textSecondary),
+                      style: TextStyle(
+                        fontSize: 13,
+                        color: AppColors.textSecondary,
+                      ),
                     ),
                     StatusBadge(status: data.paymentStatus, isPayment: true),
                   ],
@@ -370,7 +379,8 @@ class _BookingDetailScreenState extends State<BookingDetailScreen> {
           ),
 
           // Phase 6: Payment Actions
-          if (data.paymentStatus.toLowerCase() == 'unpaid' && data.status.toLowerCase() != 'cancelled') ...[
+          if (data.paymentStatus.toLowerCase() == 'unpaid' &&
+              data.status.toLowerCase() != 'cancelled') ...[
             const SizedBox(height: 28),
             CustomButton(
               text: 'Thanh toán ngay',
@@ -413,6 +423,38 @@ class _BookingDetailScreenState extends State<BookingDetailScreen> {
               backgroundColor: AppColors.rose.withAlpha(20),
               onPressed: showCancelConfirmDialog,
             ),
+          ] else if (data.paymentStatus.toLowerCase() == 'paid' &&
+              (data.status == 'pending' || data.status == 'confirmed')) ...[
+            const SizedBox(height: 14),
+            Container(
+              width: double.infinity,
+              padding: const EdgeInsets.all(14),
+              decoration: BoxDecoration(
+                color: AppColors.emerald.withAlpha(18),
+                borderRadius: BorderRadius.circular(12),
+                border: Border.all(color: AppColors.emerald.withAlpha(70)),
+              ),
+              child: const Row(
+                children: [
+                  Icon(
+                    Icons.lock_outline_rounded,
+                    color: AppColors.emerald,
+                    size: 18,
+                  ),
+                  SizedBox(width: 8),
+                  Expanded(
+                    child: Text(
+                      'Đơn đã thanh toán nên không thể hủy.',
+                      style: TextStyle(
+                        color: AppColors.emerald,
+                        fontSize: 12,
+                        fontWeight: FontWeight.w700,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
           ],
         ],
       ),
@@ -441,7 +483,10 @@ class _BookingDetailScreenState extends State<BookingDetailScreen> {
             SizedBox(width: 8),
             Text(
               'Đơn thuê này đã bị hủy',
-              style: TextStyle(color: AppColors.rose, fontWeight: FontWeight.bold),
+              style: TextStyle(
+                color: AppColors.rose,
+                fontWeight: FontWeight.bold,
+              ),
             ),
           ],
         ),
@@ -479,11 +524,15 @@ class _BookingDetailScreenState extends State<BookingDetailScreen> {
                       height: 24,
                       decoration: BoxDecoration(
                         shape: BoxShape.circle,
-                        color: isDone ? AppColors.secondary : AppColors.surfaceLight,
+                        color: isDone
+                            ? AppColors.secondary
+                            : AppColors.surfaceLight,
                         border: Border.all(
                           color: isCurrent
                               ? Colors.white
-                              : (isDone ? AppColors.secondary : AppColors.surfaceBorder),
+                              : (isDone
+                                    ? AppColors.secondary
+                                    : AppColors.surfaceBorder),
                           width: 1.5,
                         ),
                       ),
@@ -541,10 +590,7 @@ class _BookingDetailScreenState extends State<BookingDetailScreen> {
       children: [
         Text(
           label,
-          style: const TextStyle(
-            fontSize: 13,
-            color: AppColors.textSecondary,
-          ),
+          style: const TextStyle(fontSize: 13, color: AppColors.textSecondary),
         ),
         Text(
           value,

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+
 import '../../models/booking_model.dart';
 import '../../services/booking_service.dart';
 import '../../utils/app_colors.dart';
@@ -23,13 +24,14 @@ class _AdminBookingListScreenState extends State<AdminBookingListScreen> {
   List<BookingModel> bookings = [];
   String selectedFilter = 'Tất cả';
   String selectedPaymentFilter = 'Tất cả';
+  String selectedTimeFilter = 'Tất cả';
   String searchText = '';
 
   final List<String> filters = [
     'Tất cả',
     'pending',
     'confirmed',
-    'in_progress',
+    'ongoing',
     'completed',
     'cancelled',
   ];
@@ -38,7 +40,11 @@ class _AdminBookingListScreenState extends State<AdminBookingListScreen> {
     'Tất cả',
     'paid',
     'unpaid',
+    'refund_requested',
+    'refunded',
   ];
+
+  final List<String> timeFilters = ['Tất cả', 'upcoming', 'overdue'];
 
   @override
   void initState() {
@@ -78,17 +84,32 @@ class _AdminBookingListScreenState extends State<AdminBookingListScreen> {
   List<BookingModel> get filteredBookings {
     return bookings.where((b) {
       final keyword = searchText.toLowerCase().trim();
-      final matchesSearch = keyword.isEmpty ||
+      final matchesSearch =
+          keyword.isEmpty ||
           b.car.name.toLowerCase().contains(keyword) ||
           b.id.toLowerCase().contains(keyword);
 
-      final matchesStatus = selectedFilter == 'Tất cả' ||
+      final matchesStatus =
+          selectedFilter == 'Tất cả' ||
           b.status.toLowerCase() == selectedFilter.toLowerCase();
 
-      final matchesPayment = selectedPaymentFilter == 'Tất cả' ||
+      final matchesPayment =
+          selectedPaymentFilter == 'Tất cả' ||
           b.paymentStatus.toLowerCase() == selectedPaymentFilter.toLowerCase();
 
-      return matchesSearch && matchesStatus && matchesPayment;
+      final now = DateTime.now();
+      final isUpcoming =
+          b.startDate.isAfter(now) &&
+          b.startDate.difference(now).inDays <= 3 &&
+          b.status.toLowerCase() != 'cancelled';
+      final isOverdue =
+          b.endDate.isBefore(now) && b.status.toLowerCase() == 'ongoing';
+      final matchesTime =
+          selectedTimeFilter == 'Tất cả' ||
+          (selectedTimeFilter == 'upcoming' && isUpcoming) ||
+          (selectedTimeFilter == 'overdue' && isOverdue);
+
+      return matchesSearch && matchesStatus && matchesPayment && matchesTime;
     }).toList();
   }
 
@@ -135,10 +156,17 @@ class _AdminBookingListScreenState extends State<AdminBookingListScreen> {
               child: TextField(
                 controller: searchController,
                 onChanged: (val) => setState(() => searchText = val),
-                style: const TextStyle(color: AppColors.textPrimary, fontSize: 14),
+                style: const TextStyle(
+                  color: AppColors.textPrimary,
+                  fontSize: 14,
+                ),
                 decoration: InputDecoration(
                   hintText: 'Tìm theo mã đơn hoặc tên xe...',
-                  prefixIcon: const Icon(Icons.search_rounded, color: AppColors.secondary, size: 20),
+                  prefixIcon: const Icon(
+                    Icons.search_rounded,
+                    color: AppColors.secondary,
+                    size: 20,
+                  ),
                   suffixIcon: searchText.isNotEmpty
                       ? IconButton(
                           icon: const Icon(Icons.clear_rounded, size: 18),
@@ -151,7 +179,10 @@ class _AdminBookingListScreenState extends State<AdminBookingListScreen> {
                   border: InputBorder.none,
                   enabledBorder: InputBorder.none,
                   focusedBorder: InputBorder.none,
-                  contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                  contentPadding: const EdgeInsets.symmetric(
+                    horizontal: 16,
+                    vertical: 12,
+                  ),
                 ),
               ),
             ),
@@ -176,14 +207,22 @@ class _AdminBookingListScreenState extends State<AdminBookingListScreen> {
                     backgroundColor: AppColors.surface,
                     selectedColor: AppColors.primary,
                     side: BorderSide(
-                      color: isSelected ? AppColors.primaryLight : AppColors.surfaceBorder,
+                      color: isSelected
+                          ? AppColors.primaryLight
+                          : AppColors.surfaceBorder,
                     ),
                     labelStyle: TextStyle(
                       fontSize: 12,
-                      fontWeight: isSelected ? FontWeight.bold : FontWeight.w500,
-                      color: isSelected ? Colors.white : AppColors.textSecondary,
+                      fontWeight: isSelected
+                          ? FontWeight.bold
+                          : FontWeight.w500,
+                      color: isSelected
+                          ? Colors.white
+                          : AppColors.textSecondary,
                     ),
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(10),
+                    ),
                     onSelected: (_) => setState(() => selectedFilter = filter),
                   ),
                 );
@@ -211,15 +250,64 @@ class _AdminBookingListScreenState extends State<AdminBookingListScreen> {
                     backgroundColor: AppColors.surface,
                     selectedColor: AppColors.secondary.withAlpha(50),
                     side: BorderSide(
-                      color: isSelected ? AppColors.secondary : AppColors.surfaceBorder,
+                      color: isSelected
+                          ? AppColors.secondary
+                          : AppColors.surfaceBorder,
                     ),
                     labelStyle: TextStyle(
                       fontSize: 11,
-                      fontWeight: isSelected ? FontWeight.bold : FontWeight.w500,
+                      fontWeight: isSelected
+                          ? FontWeight.bold
+                          : FontWeight.w500,
                       color: isSelected ? Colors.white : AppColors.textMuted,
                     ),
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-                    onSelected: (_) => setState(() => selectedPaymentFilter = pf),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    onSelected: (_) =>
+                        setState(() => selectedPaymentFilter = pf),
+                  ),
+                );
+              },
+            ),
+          ),
+          const SizedBox(height: 10),
+
+          // Time-based filters
+          SizedBox(
+            height: 36,
+            child: ListView.builder(
+              padding: const EdgeInsets.symmetric(horizontal: 20),
+              scrollDirection: Axis.horizontal,
+              itemCount: timeFilters.length,
+              itemBuilder: (context, index) {
+                final filter = timeFilters[index];
+                final isSelected = selectedTimeFilter == filter;
+                return Padding(
+                  padding: const EdgeInsets.only(right: 8),
+                  child: FilterChip(
+                    label: Text(_timeLabel(filter)),
+                    selected: isSelected,
+                    showCheckmark: false,
+                    backgroundColor: AppColors.surface,
+                    selectedColor: AppColors.amber.withAlpha(55),
+                    side: BorderSide(
+                      color: isSelected
+                          ? AppColors.amber
+                          : AppColors.surfaceBorder,
+                    ),
+                    labelStyle: TextStyle(
+                      fontSize: 11,
+                      fontWeight: isSelected
+                          ? FontWeight.bold
+                          : FontWeight.w500,
+                      color: isSelected ? Colors.white : AppColors.textMuted,
+                    ),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    onSelected: (_) =>
+                        setState(() => selectedTimeFilter = filter),
                   ),
                 );
               },
@@ -235,9 +323,16 @@ class _AdminBookingListScreenState extends State<AdminBookingListScreen> {
               children: [
                 Text(
                   'Hiển thị: ${filtered.length} đơn thuê',
-                  style: const TextStyle(fontSize: 12, color: AppColors.textMuted, fontWeight: FontWeight.w600),
+                  style: const TextStyle(
+                    fontSize: 12,
+                    color: AppColors.textMuted,
+                    fontWeight: FontWeight.w600,
+                  ),
                 ),
-                if (searchText.isNotEmpty || selectedFilter != 'Tất cả' || selectedPaymentFilter != 'Tất cả')
+                if (searchText.isNotEmpty ||
+                    selectedFilter != 'Tất cả' ||
+                    selectedPaymentFilter != 'Tất cả' ||
+                    selectedTimeFilter != 'Tất cả')
                   GestureDetector(
                     onTap: () {
                       searchController.clear();
@@ -245,9 +340,17 @@ class _AdminBookingListScreenState extends State<AdminBookingListScreen> {
                         searchText = '';
                         selectedFilter = 'Tất cả';
                         selectedPaymentFilter = 'Tất cả';
+                        selectedTimeFilter = 'Tất cả';
                       });
                     },
-                    child: const Text('Đặt lại bộ lọc', style: TextStyle(fontSize: 12, color: AppColors.secondary, fontWeight: FontWeight.bold)),
+                    child: const Text(
+                      'Đặt lại bộ lọc',
+                      style: TextStyle(
+                        fontSize: 12,
+                        color: AppColors.secondary,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
                   ),
               ],
             ),
@@ -281,7 +384,8 @@ class _AdminBookingListScreenState extends State<AdminBookingListScreen> {
       return const EmptyStateWidget(
         icon: Icons.inbox_outlined,
         title: 'Không có đơn thuê phù hợp',
-        message: 'Không tìm thấy đơn nào khớp với các tiêu chí tìm kiếm và bộ lọc.',
+        message:
+            'Không tìm thấy đơn nào khớp với các tiêu chí tìm kiếm và bộ lọc.',
       );
     }
 
@@ -357,7 +461,10 @@ class _AdminBookingListScreenState extends State<AdminBookingListScreen> {
                       children: [
                         StatusBadge(status: booking.status),
                         const SizedBox(height: 4),
-                        StatusBadge(status: booking.paymentStatus, isPayment: true),
+                        StatusBadge(
+                          status: booking.paymentStatus,
+                          isPayment: true,
+                        ),
                       ],
                     ),
                   ],
@@ -401,8 +508,9 @@ class _AdminBookingListScreenState extends State<AdminBookingListScreen> {
       case 'pending':
         return 'Chờ duyệt';
       case 'confirmed':
-        return 'Đã duyệt';
+        return 'Đã xác nhận';
       case 'in_progress':
+      case 'ongoing':
         return 'Đang thuê';
       case 'completed':
         return 'Hoàn thành';
@@ -422,8 +530,23 @@ class _AdminBookingListScreenState extends State<AdminBookingListScreen> {
         return 'Đã thanh toán';
       case 'unpaid':
         return 'Chưa thanh toán';
+      case 'refund_requested':
+        return 'Chờ hoàn tiền';
+      case 'refunded':
+        return 'Đã hoàn tiền';
       default:
         return p;
+    }
+  }
+
+  String _timeLabel(String value) {
+    switch (value) {
+      case 'upcoming':
+        return 'Sắp nhận xe';
+      case 'overdue':
+        return 'Quá hạn trả xe';
+      default:
+        return 'Tất cả thời gian';
     }
   }
 }

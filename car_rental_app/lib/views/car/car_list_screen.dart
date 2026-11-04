@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+
 import '../../models/car_model.dart';
 import '../../services/car_service.dart';
 import '../../utils/app_colors.dart';
@@ -9,11 +10,7 @@ class CarListScreen extends StatefulWidget {
   final bool isTab;
   final String? initialBrand;
 
-  const CarListScreen({
-    super.key,
-    this.isTab = false,
-    this.initialBrand,
-  });
+  const CarListScreen({super.key, this.isTab = false, this.initialBrand});
 
   @override
   State<CarListScreen> createState() => _CarListScreenState();
@@ -77,13 +74,15 @@ class _CarListScreenState extends State<CarListScreen> {
   List<CarModel> get filteredCars {
     return cars.where((car) {
       final keyword = searchText.toLowerCase().trim();
-      final matchesSearch = keyword.isEmpty ||
+      final matchesSearch =
+          keyword.isEmpty ||
           car.name.toLowerCase().contains(keyword) ||
           car.brand.toLowerCase().contains(keyword) ||
           car.location.toLowerCase().contains(keyword);
 
       final matchesBrand =
-          selectedBrand == 'All' || car.brand.toLowerCase() == selectedBrand.toLowerCase();
+          selectedBrand == 'All' ||
+          car.brand.toLowerCase() == selectedBrand.toLowerCase();
 
       return matchesSearch && matchesBrand;
     }).toList();
@@ -99,13 +98,17 @@ class _CarListScreenState extends State<CarListScreen> {
         automaticallyImplyLeading: !widget.isTab,
         leading: !widget.isTab
             ? IconButton(
-                icon: const Icon(Icons.arrow_back_ios_new_rounded, size: 20),
+                icon: const Icon(Icons.arrow_back_ios_new_rounded, size: 18),
                 onPressed: () => Navigator.pop(context),
               )
             : null,
         title: const Text(
-          'Danh mục xe',
-          style: TextStyle(fontWeight: FontWeight.w800, fontSize: 20),
+          'ĐỘI XE CHO THUÊ',
+          style: TextStyle(
+            fontWeight: FontWeight.w900,
+            fontSize: 18,
+            letterSpacing: 0.5,
+          ),
         ),
         actions: [
           IconButton(
@@ -120,11 +123,11 @@ class _CarListScreenState extends State<CarListScreen> {
         children: [
           // Search & Filter Header
           Padding(
-            padding: const EdgeInsets.fromLTRB(20, 16, 20, 12),
+            padding: const EdgeInsets.fromLTRB(20, 12, 20, 12),
             child: Container(
               decoration: BoxDecoration(
                 color: AppColors.surface,
-                borderRadius: BorderRadius.circular(16),
+                borderRadius: BorderRadius.circular(14),
                 border: Border.all(color: AppColors.surfaceBorder, width: 1),
               ),
               child: TextField(
@@ -134,12 +137,16 @@ class _CarListScreenState extends State<CarListScreen> {
                     searchText = value;
                   });
                 },
-                style: const TextStyle(color: AppColors.textPrimary, fontSize: 15),
+                style: const TextStyle(
+                  color: AppColors.textPrimary,
+                  fontSize: 15,
+                  fontWeight: FontWeight.w600,
+                ),
                 decoration: InputDecoration(
                   hintText: 'Tìm theo tên xe, hãng, địa điểm...',
                   prefixIcon: const Icon(
                     Icons.search_rounded,
-                    color: AppColors.secondary,
+                    color: AppColors.primary,
                     size: 22,
                   ),
                   suffixIcon: searchText.isNotEmpty
@@ -156,7 +163,10 @@ class _CarListScreenState extends State<CarListScreen> {
                   border: InputBorder.none,
                   enabledBorder: InputBorder.none,
                   focusedBorder: InputBorder.none,
-                  contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+                  contentPadding: const EdgeInsets.symmetric(
+                    horizontal: 16,
+                    vertical: 14,
+                  ),
                 ),
               ),
             ),
@@ -164,7 +174,7 @@ class _CarListScreenState extends State<CarListScreen> {
 
           // Brand Filter Pills Horizontal
           SizedBox(
-            height: 44,
+            height: 40,
             child: ListView.builder(
               padding: const EdgeInsets.symmetric(horizontal: 20),
               scrollDirection: Axis.horizontal,
@@ -173,31 +183,39 @@ class _CarListScreenState extends State<CarListScreen> {
                 final brand = brands[index];
                 final isSelected = selectedBrand == brand;
                 return Padding(
-                  padding: const EdgeInsets.only(right: 10),
-                  child: FilterChip(
-                    label: Text(brand == 'All' ? 'Tất cả hãng' : brand),
-                    selected: isSelected,
-                    showCheckmark: false,
-                    backgroundColor: AppColors.surface,
-                    selectedColor: AppColors.primary,
-                    side: BorderSide(
-                      color: isSelected
-                          ? AppColors.primaryLight
-                          : AppColors.surfaceBorder,
-                    ),
-                    labelStyle: TextStyle(
-                      fontSize: 13,
-                      fontWeight: isSelected ? FontWeight.bold : FontWeight.w500,
-                      color: isSelected ? Colors.white : AppColors.textSecondary,
-                    ),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                    onSelected: (_) {
+                  padding: const EdgeInsets.only(right: 8),
+                  child: GestureDetector(
+                    onTap: () {
                       setState(() {
                         selectedBrand = brand;
                       });
                     },
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 14),
+                      alignment: Alignment.center,
+                      decoration: BoxDecoration(
+                        color: isSelected
+                            ? AppColors.primary
+                            : AppColors.surface,
+                        borderRadius: BorderRadius.circular(10),
+                        border: Border.all(
+                          color: isSelected
+                              ? AppColors.primary
+                              : AppColors.surfaceBorder,
+                        ),
+                      ),
+                      child: Text(
+                        (brand == 'All' ? 'Tất cả hãng' : brand).toUpperCase(),
+                        style: TextStyle(
+                          fontSize: 11,
+                          fontWeight: FontWeight.w900,
+                          letterSpacing: 0.5,
+                          color: isSelected
+                              ? Colors.white
+                              : AppColors.textSecondary,
+                        ),
+                      ),
+                    ),
                   ),
                 );
               },
@@ -213,11 +231,12 @@ class _CarListScreenState extends State<CarListScreen> {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Text(
-                  'Tìm thấy ${filtered.length} xe',
+                  'KẾT QUẢ // ${filtered.length} XE KHẢ DỤNG',
                   style: const TextStyle(
-                    fontSize: 13,
+                    fontSize: 11,
                     color: AppColors.textMuted,
-                    fontWeight: FontWeight.w600,
+                    fontWeight: FontWeight.w900,
+                    letterSpacing: 0.8,
                   ),
                 ),
                 if (searchText.isNotEmpty || selectedBrand != 'All')
@@ -230,11 +249,12 @@ class _CarListScreenState extends State<CarListScreen> {
                       });
                     },
                     child: const Text(
-                      'Đặt lại bộ lọc',
+                      'XÓA BỘ LỌC',
                       style: TextStyle(
-                        fontSize: 12,
-                        color: AppColors.secondary,
-                        fontWeight: FontWeight.bold,
+                        fontSize: 11,
+                        color: AppColors.primary,
+                        fontWeight: FontWeight.w900,
+                        letterSpacing: 0.5,
                       ),
                     ),
                   ),
@@ -245,9 +265,7 @@ class _CarListScreenState extends State<CarListScreen> {
           const SizedBox(height: 8),
 
           // Car List Content
-          Expanded(
-            child: buildContent(filtered),
-          ),
+          Expanded(child: buildContent(filtered)),
         ],
       ),
     );
@@ -256,7 +274,7 @@ class _CarListScreenState extends State<CarListScreen> {
   Widget buildContent(List<CarModel> filtered) {
     if (isLoading) {
       return const Center(
-        child: CircularProgressIndicator(color: AppColors.secondary),
+        child: CircularProgressIndicator(color: AppColors.primary),
       );
     }
 
@@ -288,7 +306,7 @@ class _CarListScreenState extends State<CarListScreen> {
 
     return RefreshIndicator(
       onRefresh: loadCars,
-      color: AppColors.secondary,
+      color: AppColors.primary,
       backgroundColor: AppColors.surface,
       child: ListView.builder(
         padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),

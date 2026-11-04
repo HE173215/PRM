@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+
 import '../utils/app_colors.dart';
 
 class CustomButton extends StatelessWidget {
@@ -22,7 +23,7 @@ class CustomButton extends StatelessWidget {
     this.backgroundColor,
     this.height = 54,
     this.width = double.infinity,
-    this.borderRadius = 16,
+    this.borderRadius = 14,
   });
 
   @override
@@ -34,6 +35,7 @@ class CustomButton extends StatelessWidget {
         child: OutlinedButton(
           onPressed: isLoading ? null : onPressed,
           style: OutlinedButton.styleFrom(
+            backgroundColor: backgroundColor ?? AppColors.surface,
             side: const BorderSide(color: AppColors.surfaceBorder, width: 1.5),
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(borderRadius),
@@ -54,8 +56,8 @@ class CustomButton extends StatelessWidget {
         boxShadow: onPressed != null && !isLoading
             ? [
                 BoxShadow(
-                  color: (backgroundColor ?? AppColors.primary).withAlpha(80),
-                  blurRadius: 16,
+                  color: (backgroundColor ?? AppColors.primary).withAlpha(70),
+                  blurRadius: 18,
                   offset: const Offset(0, 6),
                 ),
               ]
@@ -66,9 +68,7 @@ class CustomButton extends StatelessWidget {
         child: InkWell(
           borderRadius: BorderRadius.circular(borderRadius),
           onTap: isLoading ? null : onPressed,
-          child: Center(
-            child: _buildContent(Colors.white),
-          ),
+          child: Center(child: _buildContent(Colors.white)),
         ),
       ),
     );
@@ -91,15 +91,15 @@ class CustomButton extends StatelessWidget {
         mainAxisSize: MainAxisSize.min,
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Icon(icon, size: 20, color: textColor),
+          Icon(icon, size: 19, color: textColor),
           const SizedBox(width: 10),
           Text(
             text,
             style: TextStyle(
-              fontSize: 16,
-              fontWeight: FontWeight.w700,
+              fontSize: 15,
+              fontWeight: FontWeight.w800,
               color: textColor,
-              letterSpacing: 0.2,
+              letterSpacing: 0.3,
             ),
           ),
         ],
@@ -109,10 +109,10 @@ class CustomButton extends StatelessWidget {
     return Text(
       text,
       style: TextStyle(
-        fontSize: 16,
-        fontWeight: FontWeight.w700,
+        fontSize: 15,
+        fontWeight: FontWeight.w800,
         color: textColor,
-        letterSpacing: 0.2,
+        letterSpacing: 0.3,
       ),
     );
   }

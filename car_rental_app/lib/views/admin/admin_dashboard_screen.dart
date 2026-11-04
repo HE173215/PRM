@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+
 import '../../services/admin_service.dart';
 import '../../utils/app_colors.dart';
 import '../../utils/currency_formatter.dart';
@@ -176,10 +177,15 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
                   onPressed: () {
                     Navigator.push(
                       context,
-                      MaterialPageRoute(builder: (_) => const AdminReportsScreen()),
+                      MaterialPageRoute(
+                        builder: (_) => const AdminReportsScreen(),
+                      ),
                     );
                   },
-                  child: const Text('Xem báo cáo', style: TextStyle(color: AppColors.secondary)),
+                  child: const Text(
+                    'Xem báo cáo',
+                    style: TextStyle(color: AppColors.secondary),
+                  ),
                 ),
               ],
             ),
@@ -195,19 +201,15 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
   Widget _buildRevenueCard(double revenue) {
     return Container(
       width: double.infinity,
-      padding: const EdgeInsets.all(22),
+      padding: const EdgeInsets.all(24),
       decoration: BoxDecoration(
+        color: AppColors.surface,
         borderRadius: BorderRadius.circular(22),
-        gradient: const LinearGradient(
-          colors: [Color(0xFF312E81), Color(0xFF1E1B4B)],
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-        ),
-        border: Border.all(color: AppColors.primaryLight.withAlpha(80)),
+        border: Border.all(color: AppColors.primary.withAlpha(110), width: 1.5),
         boxShadow: [
           BoxShadow(
-            color: const Color(0xFF312E81).withAlpha(80),
-            blurRadius: 20,
+            color: AppColors.primary.withAlpha(35),
+            blurRadius: 24,
             offset: const Offset(0, 8),
           ),
         ],
@@ -219,33 +221,40 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Container(
-                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 10,
+                  vertical: 4,
+                ),
                 decoration: BoxDecoration(
-                  color: AppColors.emerald.withAlpha(40),
-                  borderRadius: BorderRadius.circular(8),
-                  border: Border.all(color: AppColors.emerald.withAlpha(80)),
+                  color: AppColors.emerald.withAlpha(28),
+                  borderRadius: BorderRadius.circular(6),
+                  border: Border.all(color: AppColors.emerald.withAlpha(90)),
                 ),
                 child: const Text(
                   'TỔNG DOANH THU THỰC TẾ',
                   style: TextStyle(
                     color: AppColors.emerald,
-                    fontSize: 11,
-                    fontWeight: FontWeight.w800,
-                    letterSpacing: 0.5,
+                    fontSize: 10,
+                    fontWeight: FontWeight.w900,
+                    letterSpacing: 0.8,
                   ),
                 ),
               ),
-              const Icon(Icons.trending_up_rounded, color: AppColors.emerald, size: 24),
+              const Icon(
+                Icons.trending_up_rounded,
+                color: AppColors.primary,
+                size: 24,
+              ),
             ],
           ),
-          const SizedBox(height: 14),
+          const SizedBox(height: 16),
           Text(
             CurrencyFormatter.format(revenue),
             style: const TextStyle(
-              fontSize: 28,
+              fontSize: 30,
               fontWeight: FontWeight.w900,
-              color: Colors.white,
-              letterSpacing: -0.5,
+              color: AppColors.textPrimary,
+              letterSpacing: -0.8,
             ),
           ),
           const SizedBox(height: 6),
@@ -365,7 +374,10 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
                     const SizedBox(height: 2),
                     Text(
                       subtitle,
-                      style: const TextStyle(fontSize: 11, color: AppColors.textMuted),
+                      style: const TextStyle(
+                        fontSize: 11,
+                        color: AppColors.textMuted,
+                      ),
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
                     ),
@@ -500,7 +512,12 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
     );
   }
 
-  Widget _buildMiniStat(String label, String value, Color color, IconData icon) {
+  Widget _buildMiniStat(
+    String label,
+    String value,
+    Color color,
+    IconData icon,
+  ) {
     return Column(
       children: [
         Icon(icon, size: 20, color: color),
@@ -560,8 +577,11 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
                   color: AppColors.primary.withAlpha(30),
                   shape: BoxShape.circle,
                 ),
-                child: const Icon(Icons.directions_car_rounded,
-                    color: AppColors.secondary, size: 20),
+                child: const Icon(
+                  Icons.directions_car_rounded,
+                  color: AppColors.secondary,
+                  size: 20,
+                ),
               ),
               const SizedBox(width: 12),
               Expanded(

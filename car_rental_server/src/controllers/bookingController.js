@@ -156,6 +156,37 @@ const getMyBookings = async (req, res) => {
   }
 };
 
+const getCarAvailability = async (req, res) => {
+  try {
+    const car = await Car.findById(req.params.carId).select("_id");
+
+    if (!car) {
+      return res.status(404).json({
+        success: false,
+        message: "Car not found",
+      });
+    }
+
+    const bookings = await Booking.find({
+      car: car._id,
+      status: { $in: ["pending", "confirmed", "ongoing"] },
+      endDate: { $gt: new Date() },
+    })
+      .select("startDate endDate")
+      .sort({ startDate: 1 });
+
+    res.status(200).json({
+      success: true,
+      data: bookings,
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+  }
+};
+
 const getBookingById = async (req, res) => {
   try {
     const booking = await Booking.findById(req.params.id)
@@ -210,6 +241,13 @@ const cancelBooking = async (req, res) => {
       });
     }
 
+    if (booking.paymentStatus === "paid") {
+      return res.status(400).json({
+        success: false,
+        message: "Paid booking cannot be cancelled",
+      });
+    }
+
     if (booking.status !== "pending" && booking.status !== "confirmed") {
       return res.status(400).json({
         success: false,
@@ -250,7 +288,15 @@ const getAllBookings = async (req, res) => {
     }
 
     if (paymentStatus) {
-      if (!["unpaid", "paid", "failed", "refunded"].includes(paymentStatus)) {
+      if (
+        ![
+          "unpaid",
+          "paid",
+          "failed",
+          "refund_requested",
+          "refunded",
+        ].includes(paymentStatus)
+      ) {
         return res.status(400).json({
           success: false,
           message: "Invalid payment status",
@@ -310,7 +356,7 @@ const getAllBookings = async (req, res) => {
 
 const updateBookingStatus = async (req, res) => {
   try {
-    const { status } = req.body;
+    const status = req.body.status?.toLowerCase();
 
     if (!bookingStatuses.includes(status)) {
       return res.status(400).json({
@@ -340,6 +386,13 @@ const updateBookingStatus = async (req, res) => {
       return res.status(400).json({
         success: false,
         message: `Cannot change booking status from ${booking.status} to ${status}`,
+      });
+    }
+
+    if (status === "cancelled" && booking.paymentStatus === "paid") {
+      return res.status(400).json({
+        success: false,
+        message: "Paid booking cannot be cancelled",
       });
     }
 
@@ -395,14 +448,21 @@ const markBookingAsPaid = async (req, res) => {
     }
 
     booking.paymentStatus = "paid";
-    booking.status = "confirmed";
+    if (booking.status === "pending") {
+      booking.status = "confirmed";
+    }
 
     await booking.save();
+
+    const populatedBooking = await Booking.findById(booking._id).populate(
+      "car",
+      "name brand images pricePerDay location seats transmission fuelType rating description",
+    );
 
     res.status(200).json({
       success: true,
       message: "Payment completed successfully",
-      data: booking,
+      data: populatedBooking,
     });
   } catch (error) {
     res.status(500).json({
@@ -415,6 +475,7 @@ const markBookingAsPaid = async (req, res) => {
 module.exports = {
   createBooking,
   getMyBookings,
+  getCarAvailability,
   getBookingById,
   cancelBooking,
   getAllBookings,

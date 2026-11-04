@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+
 import '../models/car_model.dart';
 import '../utils/app_colors.dart';
 import '../utils/currency_formatter.dart';
@@ -8,11 +9,7 @@ class CarCard extends StatelessWidget {
   final CarModel car;
   final bool isHorizontal;
 
-  const CarCard({
-    super.key,
-    required this.car,
-    this.isHorizontal = false,
-  });
+  const CarCard({super.key, required this.car, this.isHorizontal = false});
 
   @override
   Widget build(BuildContext context) {
@@ -27,26 +24,17 @@ class CarCard extends StatelessWidget {
       margin: const EdgeInsets.only(bottom: 20),
       decoration: BoxDecoration(
         color: AppColors.surface,
-        borderRadius: BorderRadius.circular(22),
+        borderRadius: BorderRadius.circular(20),
         border: Border.all(color: AppColors.surfaceBorder, width: 1),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withAlpha(40),
-            blurRadius: 16,
-            offset: const Offset(0, 8),
-          ),
-        ],
       ),
       child: Material(
         color: Colors.transparent,
         child: InkWell(
-          borderRadius: BorderRadius.circular(22),
+          borderRadius: BorderRadius.circular(20),
           onTap: () {
             Navigator.push(
               context,
-              MaterialPageRoute(
-                builder: (_) => CarDetailScreen(car: car),
-              ),
+              MaterialPageRoute(builder: (_) => CarDetailScreen(car: car)),
             );
           },
           child: Column(
@@ -56,28 +44,66 @@ class CarCard extends StatelessWidget {
               Stack(
                 children: [
                   ClipRRect(
-                    borderRadius: const BorderRadius.vertical(top: Radius.circular(22)),
-                    child: _buildImage(height: 190),
+                    borderRadius: const BorderRadius.vertical(
+                      top: Radius.circular(19),
+                    ),
+                    child: _buildImage(height: 195),
                   ),
-                  // Brand tag (Top-Left)
+                  // Subtle bottom vignette
+                  Positioned(
+                    bottom: 0,
+                    left: 0,
+                    right: 0,
+                    height: 60,
+                    child: DecoratedBox(
+                      decoration: BoxDecoration(
+                        gradient: LinearGradient(
+                          begin: Alignment.topCenter,
+                          end: Alignment.bottomCenter,
+                          colors: [
+                            Colors.transparent,
+                            AppColors.surface.withAlpha(220),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ),
+                  // Brand tag (Top-Left) - High contrast Neo-Minimalist pill
                   Positioned(
                     top: 14,
                     left: 14,
                     child: Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-                      decoration: BoxDecoration(
-                        color: AppColors.background.withAlpha(200),
-                        borderRadius: BorderRadius.circular(10),
-                        border: Border.all(color: Colors.white.withAlpha(30)),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 10,
+                        vertical: 5,
                       ),
-                      child: Text(
-                        car.brand.toUpperCase(),
-                        style: const TextStyle(
-                          color: AppColors.secondary,
-                          fontSize: 11,
-                          fontWeight: FontWeight.w800,
-                          letterSpacing: 0.5,
-                        ),
+                      decoration: BoxDecoration(
+                        color: AppColors.background.withAlpha(230),
+                        borderRadius: BorderRadius.circular(8),
+                        border: Border.all(color: AppColors.surfaceBorder),
+                      ),
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Container(
+                            width: 6,
+                            height: 6,
+                            decoration: const BoxDecoration(
+                              color: AppColors.primary,
+                              shape: BoxShape.circle,
+                            ),
+                          ),
+                          const SizedBox(width: 6),
+                          Text(
+                            car.brand.toUpperCase(),
+                            style: const TextStyle(
+                              color: AppColors.textPrimary,
+                              fontSize: 10,
+                              fontWeight: FontWeight.w900,
+                              letterSpacing: 0.8,
+                            ),
+                          ),
+                        ],
                       ),
                     ),
                   ),
@@ -86,23 +112,30 @@ class CarCard extends StatelessWidget {
                     top: 14,
                     right: 14,
                     child: Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 10,
+                        vertical: 5,
+                      ),
                       decoration: BoxDecoration(
-                        color: AppColors.background.withAlpha(200),
-                        borderRadius: BorderRadius.circular(10),
-                        border: Border.all(color: Colors.white.withAlpha(30)),
+                        color: AppColors.background.withAlpha(230),
+                        borderRadius: BorderRadius.circular(8),
+                        border: Border.all(color: AppColors.surfaceBorder),
                       ),
                       child: Row(
                         mainAxisSize: MainAxisSize.min,
                         children: [
-                          const Icon(Icons.star_rounded, size: 16, color: AppColors.amber),
+                          const Icon(
+                            Icons.star_rounded,
+                            size: 15,
+                            color: AppColors.amber,
+                          ),
                           const SizedBox(width: 4),
                           Text(
                             car.rating.toStringAsFixed(1),
                             style: const TextStyle(
-                              color: Colors.white,
-                              fontSize: 12,
-                              fontWeight: FontWeight.bold,
+                              color: AppColors.textPrimary,
+                              fontSize: 11,
+                              fontWeight: FontWeight.w900,
                             ),
                           ),
                         ],
@@ -114,37 +147,48 @@ class CarCard extends StatelessWidget {
 
               // Content Details
               Padding(
-                padding: const EdgeInsets.all(18),
+                padding: const EdgeInsets.fromLTRB(18, 14, 18, 18),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(
-                      car.name,
-                      style: const TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
-                        color: AppColors.textPrimary,
-                        letterSpacing: -0.3,
-                      ),
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Expanded(
+                          child: Text(
+                            car.name,
+                            style: const TextStyle(
+                              fontSize: 19,
+                              fontWeight: FontWeight.w900,
+                              color: AppColors.textPrimary,
+                              letterSpacing: -0.5,
+                            ),
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                        ),
+                      ],
                     ),
-                    const SizedBox(height: 8),
+                    const SizedBox(height: 6),
                     // Location
                     Row(
                       children: [
                         const Icon(
-                          Icons.location_on_outlined,
-                          size: 15,
-                          color: AppColors.textMuted,
+                          Icons.location_on_rounded,
+                          size: 14,
+                          color: AppColors.primary,
                         ),
-                        const SizedBox(width: 4),
+                        const SizedBox(width: 5),
                         Expanded(
                           child: Text(
-                            car.location.isNotEmpty ? car.location : 'Hồ Chí Minh',
+                            car.location.isNotEmpty
+                                ? car.location
+                                : 'Hồ Chí Minh',
                             style: const TextStyle(
-                              fontSize: 13,
+                              fontSize: 12,
                               color: AppColors.textSecondary,
+                              fontWeight: FontWeight.w500,
                             ),
                             maxLines: 1,
                             overflow: TextOverflow.ellipsis,
@@ -154,13 +198,22 @@ class CarCard extends StatelessWidget {
                     ),
                     const SizedBox(height: 14),
                     // Feature tags (Seats, Transmission, Fuel)
-                    Row(
+                    Wrap(
+                      spacing: 8,
+                      runSpacing: 8,
                       children: [
-                        _buildFeaturePill(Icons.people_outline, '${car.seats} chỗ'),
-                        const SizedBox(width: 8),
-                        _buildFeaturePill(Icons.tune, car.transmission),
-                        const SizedBox(width: 8),
-                        _buildFeaturePill(Icons.local_gas_station_outlined, car.fuelType),
+                        _buildFeaturePill(
+                          Icons.event_seat_outlined,
+                          '${car.seats} CHỖ',
+                        ),
+                        _buildFeaturePill(
+                          Icons.settings_input_component_rounded,
+                          car.transmission.toUpperCase(),
+                        ),
+                        _buildFeaturePill(
+                          Icons.bolt_rounded,
+                          car.fuelType.toUpperCase(),
+                        ),
                       ],
                     ),
                     const SizedBox(height: 16),
@@ -175,11 +228,12 @@ class CarCard extends StatelessWidget {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             const Text(
-                              'Giá thuê từ',
+                              'ĐƠN GIÁ THUÊ',
                               style: TextStyle(
-                                fontSize: 11,
+                                fontSize: 10,
                                 color: AppColors.textMuted,
-                                fontWeight: FontWeight.w500,
+                                fontWeight: FontWeight.w800,
+                                letterSpacing: 0.6,
                               ),
                             ),
                             const SizedBox(height: 2),
@@ -187,20 +241,23 @@ class CarCard extends StatelessWidget {
                               text: TextSpan(
                                 children: [
                                   TextSpan(
-                                    text: CurrencyFormatter.format(car.pricePerDay, showUnit: false),
+                                    text: CurrencyFormatter.format(
+                                      car.pricePerDay,
+                                      showUnit: false,
+                                    ),
                                     style: const TextStyle(
-                                      fontSize: 19,
+                                      fontSize: 20,
                                       fontWeight: FontWeight.w900,
-                                      color: AppColors.secondary,
-                                      letterSpacing: -0.5,
+                                      color: AppColors.textPrimary,
+                                      letterSpacing: -0.6,
                                     ),
                                   ),
                                   const TextSpan(
                                     text: ' đ/ngày',
                                     style: TextStyle(
                                       fontSize: 12,
-                                      fontWeight: FontWeight.w600,
-                                      color: AppColors.textSecondary,
+                                      fontWeight: FontWeight.w700,
+                                      color: AppColors.primary,
                                     ),
                                   ),
                                 ],
@@ -209,31 +266,32 @@ class CarCard extends StatelessWidget {
                           ],
                         ),
                         Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 9),
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 16,
+                            vertical: 10,
+                          ),
                           decoration: BoxDecoration(
-                            gradient: AppColors.primaryGradient,
-                            borderRadius: BorderRadius.circular(12),
-                            boxShadow: [
-                              BoxShadow(
-                                color: AppColors.primary.withAlpha(80),
-                                blurRadius: 10,
-                                offset: const Offset(0, 4),
-                              ),
-                            ],
+                            color: AppColors.primary,
+                            borderRadius: BorderRadius.circular(10),
                           ),
                           child: const Row(
                             mainAxisSize: MainAxisSize.min,
                             children: [
                               Text(
-                                'Chi tiết',
+                                'ĐẶT XE',
                                 style: TextStyle(
-                                  fontSize: 13,
-                                  fontWeight: FontWeight.bold,
+                                  fontSize: 12,
+                                  fontWeight: FontWeight.w900,
                                   color: Colors.white,
+                                  letterSpacing: 0.5,
                                 ),
                               ),
-                              SizedBox(width: 4),
-                              Icon(Icons.arrow_forward_rounded, size: 14, color: Colors.white),
+                              SizedBox(width: 6),
+                              Icon(
+                                Icons.north_east_rounded,
+                                size: 14,
+                                color: Colors.white,
+                              ),
                             ],
                           ),
                         ),
@@ -251,31 +309,59 @@ class CarCard extends StatelessWidget {
 
   Widget _buildHorizontalCard(BuildContext context) {
     return Container(
-      width: 250,
+      width: 260,
       margin: const EdgeInsets.only(right: 16),
       decoration: BoxDecoration(
         color: AppColors.surface,
-        borderRadius: BorderRadius.circular(20),
+        borderRadius: BorderRadius.circular(18),
         border: Border.all(color: AppColors.surfaceBorder, width: 1),
       ),
       child: Material(
         color: Colors.transparent,
         child: InkWell(
-          borderRadius: BorderRadius.circular(20),
+          borderRadius: BorderRadius.circular(18),
           onTap: () {
             Navigator.push(
               context,
-              MaterialPageRoute(
-                builder: (_) => CarDetailScreen(car: car),
-              ),
+              MaterialPageRoute(builder: (_) => CarDetailScreen(car: car)),
             );
           },
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              ClipRRect(
-                borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
-                child: _buildImage(height: 130),
+              Stack(
+                children: [
+                  ClipRRect(
+                    borderRadius: const BorderRadius.vertical(
+                      top: Radius.circular(17),
+                    ),
+                    child: _buildImage(height: 135),
+                  ),
+                  Positioned(
+                    top: 10,
+                    left: 10,
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 8,
+                        vertical: 4,
+                      ),
+                      decoration: BoxDecoration(
+                        color: AppColors.background.withAlpha(220),
+                        borderRadius: BorderRadius.circular(6),
+                        border: Border.all(color: AppColors.surfaceBorder),
+                      ),
+                      child: Text(
+                        car.brand.toUpperCase(),
+                        style: const TextStyle(
+                          fontSize: 9,
+                          fontWeight: FontWeight.w900,
+                          color: AppColors.secondary,
+                          letterSpacing: 0.6,
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
               ),
               Padding(
                 padding: const EdgeInsets.all(14),
@@ -285,9 +371,10 @@ class CarCard extends StatelessWidget {
                     Text(
                       car.name,
                       style: const TextStyle(
-                        fontSize: 15,
-                        fontWeight: FontWeight.bold,
+                        fontSize: 16,
+                        fontWeight: FontWeight.w900,
                         color: AppColors.textPrimary,
+                        letterSpacing: -0.4,
                       ),
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
@@ -298,9 +385,10 @@ class CarCard extends StatelessWidget {
                       style: const TextStyle(
                         fontSize: 12,
                         color: AppColors.textSecondary,
+                        fontWeight: FontWeight.w500,
                       ),
                     ),
-                    const SizedBox(height: 8),
+                    const SizedBox(height: 10),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
@@ -308,23 +396,37 @@ class CarCard extends StatelessWidget {
                           CurrencyFormatter.formatPerDay(car.pricePerDay),
                           style: const TextStyle(
                             fontSize: 14,
-                            fontWeight: FontWeight.w800,
-                            color: AppColors.secondary,
+                            fontWeight: FontWeight.w900,
+                            color: AppColors.primary,
                           ),
                         ),
-                        Row(
-                          children: [
-                            const Icon(Icons.star_rounded, size: 15, color: AppColors.amber),
-                            const SizedBox(width: 2),
-                            Text(
-                              car.rating.toStringAsFixed(1),
-                              style: const TextStyle(
-                                fontSize: 12,
-                                fontWeight: FontWeight.bold,
-                                color: Colors.white,
+                        Container(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 7,
+                            vertical: 3,
+                          ),
+                          decoration: BoxDecoration(
+                            color: AppColors.surfaceLight,
+                            borderRadius: BorderRadius.circular(6),
+                          ),
+                          child: Row(
+                            children: [
+                              const Icon(
+                                Icons.star_rounded,
+                                size: 13,
+                                color: AppColors.amber,
                               ),
-                            ),
-                          ],
+                              const SizedBox(width: 3),
+                              Text(
+                                car.rating.toStringAsFixed(1),
+                                style: const TextStyle(
+                                  fontSize: 11,
+                                  fontWeight: FontWeight.w800,
+                                  color: AppColors.textPrimary,
+                                ),
+                              ),
+                            ],
+                          ),
                         ),
                       ],
                     ),
@@ -341,23 +443,24 @@ class CarCard extends StatelessWidget {
   Widget _buildFeaturePill(IconData icon, String text) {
     if (text.isEmpty) return const SizedBox.shrink();
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+      padding: const EdgeInsets.symmetric(horizontal: 9, vertical: 5),
       decoration: BoxDecoration(
         color: AppColors.surfaceLight,
-        borderRadius: BorderRadius.circular(8),
-        border: Border.all(color: AppColors.surfaceBorder, width: 0.8),
+        borderRadius: BorderRadius.circular(6),
+        border: Border.all(color: AppColors.surfaceBorder, width: 1),
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Icon(icon, size: 13, color: AppColors.textSecondary),
-          const SizedBox(width: 4),
+          Icon(icon, size: 12, color: AppColors.secondary),
+          const SizedBox(width: 5),
           Text(
             text,
             style: const TextStyle(
-              fontSize: 11,
-              color: AppColors.textSecondary,
-              fontWeight: FontWeight.w600,
+              fontSize: 10,
+              color: AppColors.textPrimary,
+              fontWeight: FontWeight.w800,
+              letterSpacing: 0.4,
             ),
           ),
         ],
@@ -373,7 +476,7 @@ class CarCard extends StatelessWidget {
         color: AppColors.surfaceLight,
         child: const Icon(
           Icons.directions_car_rounded,
-          size: 60,
+          size: 56,
           color: AppColors.surfaceBorder,
         ),
       );
@@ -392,7 +495,7 @@ class CarCard extends StatelessWidget {
           child: const Center(
             child: Icon(
               Icons.directions_car_rounded,
-              size: 60,
+              size: 56,
               color: AppColors.surfaceBorder,
             ),
           ),

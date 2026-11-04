@@ -3,6 +3,7 @@ const express = require("express");
 const {
   createBooking,
   getMyBookings,
+  getCarAvailability,
   getBookingById,
   cancelBooking,
   getAllBookings,
@@ -20,6 +21,7 @@ router.use(protect);
 router.post("/", createBooking);
 
 router.get("/my", getMyBookings);
+router.get("/car/:carId/availability", getCarAvailability);
 
 // ADMIN
 router.get("/", authorize("admin"), getAllBookings);

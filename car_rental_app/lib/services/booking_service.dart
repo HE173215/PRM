@@ -80,6 +80,24 @@ class BookingService {
     throw Exception(data['message'] ?? 'Không thể tải đơn thuê');
   }
 
+  Future<List<BookingPeriod>> getCarAvailability(String carId) async {
+    final headers = await _authHeaders();
+    final url = Uri.parse(
+      '${ApiService.baseUrl}/bookings/car/$carId/availability',
+    );
+    final response = await http.get(url, headers: headers);
+    final data = _parseResponse(response);
+
+    if (response.statusCode == 200) {
+      final List<dynamic> list = data['data'] ?? [];
+      return list
+          .map((item) => BookingPeriod.fromJson(item as Map<String, dynamic>))
+          .toList();
+    }
+
+    throw Exception(data['message'] ?? 'Không thể tải lịch đặt xe');
+  }
+
   Future<BookingModel> getBookingById(String bookingId) async {
     final headers = await _authHeaders();
 
@@ -139,10 +157,16 @@ class BookingService {
     final headers = await _authHeaders();
 
     final queryParams = <String, String>{};
-    if (status != null && status.isNotEmpty && status.toLowerCase() != 'tất cả' && status.toLowerCase() != 'all') {
+    if (status != null &&
+        status.isNotEmpty &&
+        status.toLowerCase() != 'tất cả' &&
+        status.toLowerCase() != 'all') {
       queryParams['status'] = status;
     }
-    if (paymentStatus != null && paymentStatus.isNotEmpty && paymentStatus.toLowerCase() != 'tất cả' && paymentStatus.toLowerCase() != 'all') {
+    if (paymentStatus != null &&
+        paymentStatus.isNotEmpty &&
+        paymentStatus.toLowerCase() != 'tất cả' &&
+        paymentStatus.toLowerCase() != 'all') {
       queryParams['paymentStatus'] = paymentStatus;
     }
     if (search != null && search.isNotEmpty) {
@@ -173,7 +197,9 @@ class BookingService {
 
   Future<void> updateBookingStatus(String bookingId, String status) async {
     final headers = await _authHeaders();
-    Uri url = Uri.parse('${ApiService.baseUrl}/bookings/admin/$bookingId/status');
+    Uri url = Uri.parse(
+      '${ApiService.baseUrl}/bookings/admin/$bookingId/status',
+    );
 
     var response = await http.patch(
       url,

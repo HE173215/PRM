@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+
 import '../../models/car_model.dart';
 import '../../utils/app_colors.dart';
 import '../../utils/currency_formatter.dart';
@@ -25,23 +26,25 @@ class _CarDetailScreenState extends State<CarDetailScreen> {
       backgroundColor: AppColors.background,
       body: Stack(
         children: [
-          // Scrollable Body Content
           CustomScrollView(
             slivers: [
               // Hero Image App Bar
               SliverAppBar(
-                expandedHeight: 300,
+                expandedHeight: 310,
                 pinned: true,
                 backgroundColor: AppColors.background,
                 leading: Container(
                   margin: const EdgeInsets.all(8),
                   decoration: BoxDecoration(
-                    color: AppColors.background.withAlpha(200),
-                    shape: BoxShape.circle,
-                    border: Border.all(color: Colors.white.withAlpha(30)),
+                    color: AppColors.background.withAlpha(220),
+                    borderRadius: BorderRadius.circular(12),
+                    border: Border.all(color: AppColors.surfaceBorder),
                   ),
                   child: IconButton(
-                    icon: const Icon(Icons.arrow_back_ios_new_rounded, size: 18),
+                    icon: const Icon(
+                      Icons.arrow_back_ios_new_rounded,
+                      size: 18,
+                    ),
                     color: Colors.white,
                     onPressed: () => Navigator.pop(context),
                   ),
@@ -50,13 +53,15 @@ class _CarDetailScreenState extends State<CarDetailScreen> {
                   Container(
                     margin: const EdgeInsets.all(8),
                     decoration: BoxDecoration(
-                      color: AppColors.background.withAlpha(200),
-                      shape: BoxShape.circle,
-                      border: Border.all(color: Colors.white.withAlpha(30)),
+                      color: AppColors.background.withAlpha(220),
+                      borderRadius: BorderRadius.circular(12),
+                      border: Border.all(color: AppColors.surfaceBorder),
                     ),
                     child: IconButton(
                       icon: Icon(
-                        isFavorite ? Icons.favorite_rounded : Icons.favorite_border_rounded,
+                        isFavorite
+                            ? Icons.favorite_rounded
+                            : Icons.favorite_border_rounded,
                         color: isFavorite ? AppColors.rose : Colors.white,
                         size: 20,
                       ),
@@ -67,7 +72,9 @@ class _CarDetailScreenState extends State<CarDetailScreen> {
                         ScaffoldMessenger.of(context).showSnackBar(
                           SnackBar(
                             content: Text(
-                              isFavorite ? 'Đã thêm vào mục yêu thích' : 'Đã xóa khỏi yêu thích',
+                              isFavorite
+                                  ? 'Đã lưu vào danh sách yêu thích'
+                                  : 'Đã xóa khỏi yêu thích',
                             ),
                             duration: const Duration(seconds: 1),
                           ),
@@ -81,7 +88,6 @@ class _CarDetailScreenState extends State<CarDetailScreen> {
                     fit: StackFit.expand,
                     children: [
                       _buildHeroImage(car.image),
-                      // Top gradient for appbar icon visibility
                       const DecoratedBox(
                         decoration: BoxDecoration(
                           gradient: LinearGradient(
@@ -91,18 +97,20 @@ class _CarDetailScreenState extends State<CarDetailScreen> {
                           ),
                         ),
                       ),
-                      // Bottom gradient into dark scaffold
                       Positioned(
                         bottom: 0,
                         left: 0,
                         right: 0,
-                        height: 90,
+                        height: 100,
                         child: Container(
                           decoration: const BoxDecoration(
                             gradient: LinearGradient(
                               begin: Alignment.topCenter,
                               end: Alignment.bottomCenter,
-                              colors: [Colors.transparent, AppColors.background],
+                              colors: [
+                                Colors.transparent,
+                                AppColors.background,
+                              ],
                             ),
                           ),
                         ),
@@ -115,7 +123,7 @@ class _CarDetailScreenState extends State<CarDetailScreen> {
               // Details Body
               SliverToBoxAdapter(
                 child: Padding(
-                  padding: const EdgeInsets.fromLTRB(20, 10, 20, 120),
+                  padding: const EdgeInsets.fromLTRB(20, 6, 20, 130),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
@@ -124,47 +132,62 @@ class _CarDetailScreenState extends State<CarDetailScreen> {
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
                           Container(
-                            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 12,
+                              vertical: 6,
+                            ),
                             decoration: BoxDecoration(
-                              color: AppColors.primary.withAlpha(40),
-                              borderRadius: BorderRadius.circular(10),
-                              border: Border.all(color: AppColors.primaryLight.withAlpha(80)),
+                              color: AppColors.primary.withAlpha(28),
+                              borderRadius: BorderRadius.circular(8),
+                              border: Border.all(
+                                color: AppColors.primary.withAlpha(100),
+                              ),
                             ),
                             child: Text(
                               car.brand.toUpperCase(),
                               style: const TextStyle(
-                                color: AppColors.secondary,
-                                fontSize: 12,
-                                fontWeight: FontWeight.w800,
-                                letterSpacing: 0.5,
+                                color: AppColors.primary,
+                                fontSize: 11,
+                                fontWeight: FontWeight.w900,
+                                letterSpacing: 0.8,
                               ),
                             ),
                           ),
                           Container(
-                            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 10,
+                              vertical: 6,
+                            ),
                             decoration: BoxDecoration(
                               color: AppColors.surface,
-                              borderRadius: BorderRadius.circular(10),
-                              border: Border.all(color: AppColors.surfaceBorder),
+                              borderRadius: BorderRadius.circular(8),
+                              border: Border.all(
+                                color: AppColors.surfaceBorder,
+                              ),
                             ),
                             child: Row(
                               children: [
-                                const Icon(Icons.star_rounded, color: AppColors.amber, size: 18),
+                                const Icon(
+                                  Icons.star_rounded,
+                                  color: AppColors.amber,
+                                  size: 16,
+                                ),
                                 const SizedBox(width: 4),
                                 Text(
                                   car.rating.toStringAsFixed(1),
                                   style: const TextStyle(
-                                    fontWeight: FontWeight.bold,
-                                    color: Colors.white,
-                                    fontSize: 13,
+                                    fontWeight: FontWeight.w900,
+                                    color: AppColors.textPrimary,
+                                    fontSize: 12,
                                   ),
                                 ),
                                 const SizedBox(width: 4),
                                 const Text(
-                                  '(48 đánh giá)',
+                                  '• 48 CHUYẾN',
                                   style: TextStyle(
                                     color: AppColors.textMuted,
-                                    fontSize: 12,
+                                    fontSize: 10,
+                                    fontWeight: FontWeight.w800,
                                   ),
                                 ),
                               ],
@@ -178,10 +201,10 @@ class _CarDetailScreenState extends State<CarDetailScreen> {
                       Text(
                         car.name,
                         style: const TextStyle(
-                          fontSize: 26,
+                          fontSize: 28,
                           fontWeight: FontWeight.w900,
                           color: AppColors.textPrimary,
-                          letterSpacing: -0.5,
+                          letterSpacing: -0.8,
                         ),
                       ),
                       const SizedBox(height: 8),
@@ -189,54 +212,66 @@ class _CarDetailScreenState extends State<CarDetailScreen> {
                       // Location
                       Row(
                         children: [
-                          const Icon(Icons.location_on_outlined, color: AppColors.secondary, size: 18),
+                          const Icon(
+                            Icons.location_on_rounded,
+                            color: AppColors.primary,
+                            size: 16,
+                          ),
                           const SizedBox(width: 6),
                           Expanded(
                             child: Text(
-                              car.location.isNotEmpty ? car.location : 'Hồ Chí Minh, Việt Nam',
+                              car.location.isNotEmpty
+                                  ? car.location
+                                  : 'Hồ Chí Minh, Việt Nam',
                               style: const TextStyle(
-                                fontSize: 14,
+                                fontSize: 13,
                                 color: AppColors.textSecondary,
+                                fontWeight: FontWeight.w600,
                               ),
                             ),
                           ),
                         ],
                       ),
-                      const SizedBox(height: 24),
+                      const SizedBox(height: 26),
 
                       // Specifications Grid
                       const Text(
-                        'Thông số kỹ thuật',
+                        'THÔNG SỐ KỸ THUẬT',
                         style: TextStyle(
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold,
-                          color: AppColors.textPrimary,
+                          fontSize: 12,
+                          fontWeight: FontWeight.w900,
+                          color: AppColors.textMuted,
+                          letterSpacing: 1.0,
                         ),
                       ),
-                      const SizedBox(height: 14),
+                      const SizedBox(height: 12),
                       Row(
                         children: [
                           Expanded(
                             child: _buildSpecCard(
-                              icon: Icons.airline_seat_recline_normal_rounded,
-                              label: 'Số ghế',
-                              value: '${car.seats} chỗ',
+                              icon: Icons.event_seat_outlined,
+                              label: 'SỐ CHỖ',
+                              value: '${car.seats} Ghế',
                             ),
                           ),
-                          const SizedBox(width: 12),
+                          const SizedBox(width: 10),
                           Expanded(
                             child: _buildSpecCard(
-                              icon: Icons.tune_rounded,
-                              label: 'Hộp số',
-                              value: car.transmission.isNotEmpty ? car.transmission : 'Tự động',
+                              icon: Icons.settings_input_component_rounded,
+                              label: 'TRUYỀN ĐỘNG',
+                              value: car.transmission.isNotEmpty
+                                  ? car.transmission
+                                  : 'Tự động',
                             ),
                           ),
-                          const SizedBox(width: 12),
+                          const SizedBox(width: 10),
                           Expanded(
                             child: _buildSpecCard(
-                              icon: Icons.local_gas_station_rounded,
-                              label: 'Nhiên liệu',
-                              value: car.fuelType.isNotEmpty ? car.fuelType : 'Xăng',
+                              icon: Icons.bolt_rounded,
+                              label: 'ĐỘNG CƠ',
+                              value: car.fuelType.isNotEmpty
+                                  ? car.fuelType
+                                  : 'Xăng',
                             ),
                           ),
                         ],
@@ -245,44 +280,47 @@ class _CarDetailScreenState extends State<CarDetailScreen> {
 
                       // Features & Policies
                       const Text(
-                        'Tiện ích & Quyền lợi',
+                        'TIÊU CHUẨN BÀN GIAO',
                         style: TextStyle(
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold,
-                          color: AppColors.textPrimary,
+                          fontSize: 12,
+                          fontWeight: FontWeight.w900,
+                          color: AppColors.textMuted,
+                          letterSpacing: 1.0,
                         ),
                       ),
-                      const SizedBox(height: 14),
+                      const SizedBox(height: 12),
                       _buildBenefitTile(
-                        icon: Icons.shield_outlined,
-                        title: 'Bảo hiểm chuyến đi',
-                        subtitle: 'Đã bao gồm gói bảo hiểm vật chất xe tiêu chuẩn',
+                        icon: Icons.verified_user_outlined,
+                        title: 'Bảo hiểm toàn diện 2 chiều',
+                        subtitle: 'An tâm di chuyển trên mọi cung đường với gói bảo hiểm MIC',
                       ),
                       const SizedBox(height: 10),
                       _buildBenefitTile(
-                        icon: Icons.event_available_outlined,
-                        title: 'Hủy chuyến linh hoạt',
-                        subtitle: 'Hủy miễn phí trước 24 giờ nhận xe',
+                        icon: Icons.schedule_rounded,
+                        title: 'Miễn phí hủy chuyến linh hoạt',
+                        subtitle: 'Hoàn 100% phí giữ chỗ nếu thay đổi lịch trình trước 24h',
                       ),
                       const SizedBox(height: 10),
                       _buildBenefitTile(
-                        icon: Icons.cleaning_services_outlined,
-                        title: 'Vệ sinh khử khuẩn',
-                        subtitle: 'Xe được rửa sạch và kiểm tra an toàn trước khi bàn giao',
+                        icon: Icons.auto_awesome_outlined,
+                        title: 'Khử khuẩn & Kiểm định 30 bước',
+                        subtitle: 'Xe luôn sạch sẽ, đầy bình nhiên liệu/pin trước giờ nhận',
                       ),
                       const SizedBox(height: 28),
 
                       // Description
                       const Text(
-                        'Mô tả chi tiết',
+                        'MÔ TẢ PHƯƠNG TIỆN',
                         style: TextStyle(
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold,
-                          color: AppColors.textPrimary,
+                          fontSize: 12,
+                          fontWeight: FontWeight.w900,
+                          color: AppColors.textMuted,
+                          letterSpacing: 1.0,
                         ),
                       ),
                       const SizedBox(height: 12),
                       Container(
+                        width: double.infinity,
                         padding: const EdgeInsets.all(18),
                         decoration: BoxDecoration(
                           color: AppColors.surface,
@@ -290,9 +328,7 @@ class _CarDetailScreenState extends State<CarDetailScreen> {
                           border: Border.all(color: AppColors.surfaceBorder),
                         ),
                         child: Text(
-                          car.description.isNotEmpty
-                              ? car.description
-                              : 'Xe sang đời mới, vận hành êm ái, đầy đủ tiện nghi, phù hợp cho các chuyến công tác, du lịch gia đình hoặc trải nghiệm phong cách sống thượng lưu.',
+                          car.description.isNotEmpty ? car.description : 'Mẫu xe đời mới trang bị hệ thống hỗ trợ lái thông minh, màn hình giải trí sắc nét, điều hòa tự động và khoang hành lý rộng rãi cho cả gia đình.',
                           style: const TextStyle(
                             fontSize: 14,
                             color: AppColors.textSecondary,
@@ -321,8 +357,8 @@ class _CarDetailScreenState extends State<CarDetailScreen> {
                 ),
                 boxShadow: [
                   BoxShadow(
-                    color: Colors.black.withAlpha(120),
-                    blurRadius: 20,
+                    color: Colors.black.withAlpha(160),
+                    blurRadius: 24,
                     offset: const Offset(0, -6),
                   ),
                 ],
@@ -331,17 +367,17 @@ class _CarDetailScreenState extends State<CarDetailScreen> {
                 top: false,
                 child: Row(
                   children: [
-                    // Price info
                     Column(
                       mainAxisSize: MainAxisSize.min,
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         const Text(
-                          'Giá thuê',
+                          'GIÁ THUÊ TRỌN GÓI',
                           style: TextStyle(
-                            fontSize: 12,
+                            fontSize: 10,
                             color: AppColors.textMuted,
-                            fontWeight: FontWeight.w500,
+                            fontWeight: FontWeight.w900,
+                            letterSpacing: 0.6,
                           ),
                         ),
                         const SizedBox(height: 2),
@@ -349,20 +385,23 @@ class _CarDetailScreenState extends State<CarDetailScreen> {
                           text: TextSpan(
                             children: [
                               TextSpan(
-                                text: CurrencyFormatter.format(car.pricePerDay, showUnit: false),
+                                text: CurrencyFormatter.format(
+                                  car.pricePerDay,
+                                  showUnit: false,
+                                ),
                                 style: const TextStyle(
                                   fontSize: 22,
                                   fontWeight: FontWeight.w900,
-                                  color: AppColors.secondary,
-                                  letterSpacing: -0.5,
+                                  color: AppColors.textPrimary,
+                                  letterSpacing: -0.6,
                                 ),
                               ),
                               const TextSpan(
                                 text: ' đ/ngày',
                                 style: TextStyle(
-                                  fontSize: 13,
-                                  color: AppColors.textSecondary,
-                                  fontWeight: FontWeight.w600,
+                                  fontSize: 12,
+                                  color: AppColors.primary,
+                                  fontWeight: FontWeight.w800,
                                 ),
                               ),
                             ],
@@ -372,11 +411,10 @@ class _CarDetailScreenState extends State<CarDetailScreen> {
                     ),
                     const SizedBox(width: 20),
 
-                    // Action Button
                     Expanded(
                       child: CustomButton(
-                        text: 'Thuê xe ngay',
-                        icon: Icons.calendar_today_rounded,
+                        text: 'ĐẶT XE NGAY',
+                        icon: Icons.bolt_rounded,
                         onPressed: () {
                           Navigator.push(
                             context,
@@ -436,26 +474,29 @@ class _CarDetailScreenState extends State<CarDetailScreen> {
       padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 10),
       decoration: BoxDecoration(
         color: AppColors.surface,
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: BorderRadius.circular(14),
         border: Border.all(color: AppColors.surfaceBorder),
       ),
       child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Icon(icon, color: AppColors.secondary, size: 24),
-          const SizedBox(height: 8),
+          Icon(icon, color: AppColors.secondary, size: 20),
+          const SizedBox(height: 10),
           Text(
             label,
             style: const TextStyle(
-              fontSize: 11,
+              fontSize: 9,
+              fontWeight: FontWeight.w900,
               color: AppColors.textMuted,
+              letterSpacing: 0.6,
             ),
           ),
           const SizedBox(height: 2),
           Text(
             value,
             style: const TextStyle(
-              fontSize: 13,
-              fontWeight: FontWeight.bold,
+              fontSize: 14,
+              fontWeight: FontWeight.w900,
               color: AppColors.textPrimary,
             ),
             maxLines: 1,
@@ -485,8 +526,9 @@ class _CarDetailScreenState extends State<CarDetailScreen> {
             decoration: BoxDecoration(
               color: AppColors.surfaceLight,
               borderRadius: BorderRadius.circular(10),
+              border: Border.all(color: AppColors.surfaceBorder),
             ),
-            child: Icon(icon, color: AppColors.emerald, size: 22),
+            child: Icon(icon, color: AppColors.primary, size: 20),
           ),
           const SizedBox(width: 14),
           Expanded(
@@ -497,11 +539,11 @@ class _CarDetailScreenState extends State<CarDetailScreen> {
                   title,
                   style: const TextStyle(
                     fontSize: 14,
-                    fontWeight: FontWeight.bold,
+                    fontWeight: FontWeight.w800,
                     color: AppColors.textPrimary,
                   ),
                 ),
-                const SizedBox(height: 2),
+                const SizedBox(height: 3),
                 Text(
                   subtitle,
                   style: const TextStyle(

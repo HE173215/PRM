@@ -1,5 +1,19 @@
 import 'car_model.dart';
 
+class BookingPeriod {
+  final DateTime startDate;
+  final DateTime endDate;
+
+  const BookingPeriod({required this.startDate, required this.endDate});
+
+  factory BookingPeriod.fromJson(Map<String, dynamic> json) {
+    return BookingPeriod(
+      startDate: DateTime.parse(json['startDate'].toString()).toLocal(),
+      endDate: DateTime.parse(json['endDate'].toString()).toLocal(),
+    );
+  }
+}
+
 class BookingModel {
   final String id;
 

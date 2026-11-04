@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+
 import '../../models/booking_model.dart';
 import '../../services/booking_service.dart';
 import '../../utils/app_colors.dart';
@@ -26,7 +27,7 @@ class _AdminBookingDetailScreenState extends State<AdminBookingDetailScreen> {
   final List<String> availableStatuses = [
     'pending',
     'confirmed',
-    'in_progress',
+    'ongoing',
     'completed',
     'cancelled',
   ];
@@ -71,7 +72,9 @@ class _AdminBookingDetailScreenState extends State<AdminBookingDetailScreen> {
 
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('Cập nhật trạng thái thành "$newStatus" thành công'),
+          content: Text(
+            'Đã chuyển đơn sang "${StatusBadge.labelFor(newStatus)}"',
+          ),
           backgroundColor: AppColors.emerald,
         ),
       );
@@ -229,7 +232,8 @@ class _AdminBookingDetailScreenState extends State<AdminBookingDetailScreen> {
                 ),
                 const SizedBox(height: 12),
                 DropdownButtonFormField<String>(
-                  initialValue: availableStatuses.contains(data.status.toLowerCase())
+                  initialValue:
+                      availableStatuses.contains(data.status.toLowerCase())
                       ? data.status.toLowerCase()
                       : null,
                   decoration: InputDecoration(
@@ -241,14 +245,12 @@ class _AdminBookingDetailScreenState extends State<AdminBookingDetailScreen> {
                   items: availableStatuses.map((status) {
                     return DropdownMenuItem(
                       value: status,
-                      child: Text(
-                        status.toUpperCase(),
-                        style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 13),
-                      ),
+                      child: StatusBadge(status: status),
                     );
                   }).toList(),
                   onChanged: (newStatus) {
-                    if (newStatus != null && newStatus != data.status.toLowerCase()) {
+                    if (newStatus != null &&
+                        newStatus != data.status.toLowerCase()) {
                       showUpdateConfirmDialog(newStatus);
                     }
                   },
@@ -284,9 +286,15 @@ class _AdminBookingDetailScreenState extends State<AdminBookingDetailScreen> {
                 const SizedBox(height: 10),
                 _detailRow('Số ngày thuê', '${data.totalDays} ngày'),
                 const SizedBox(height: 10),
-                _detailRow('Giá thuê/ngày', CurrencyFormatter.formatPerDay(data.pricePerDay)),
+                _detailRow(
+                  'Giá thuê/ngày',
+                  CurrencyFormatter.formatPerDay(data.pricePerDay),
+                ),
                 const SizedBox(height: 10),
-                _detailRow('Ghi chú', data.note.isNotEmpty ? data.note : 'Không có'),
+                _detailRow(
+                  'Ghi chú',
+                  data.note.isNotEmpty ? data.note : 'Không có',
+                ),
                 const SizedBox(height: 10),
                 _detailRow('Thanh toán', data.paymentStatus, isBadge: true),
                 const SizedBox(height: 14),

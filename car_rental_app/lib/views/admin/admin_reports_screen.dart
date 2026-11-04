@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+
 import '../../services/admin_service.dart';
 import '../../utils/app_colors.dart';
 import '../../utils/currency_formatter.dart';
@@ -47,7 +48,9 @@ class _AdminReportsScreenState extends State<AdminReportsScreen>
       });
 
       final results = await Future.wait([
-        adminService.getRevenueReport(year: selectedYear).catchError((_) => <RevenueMonth>[]),
+        adminService
+            .getRevenueReport(year: selectedYear)
+            .catchError((_) => <RevenueMonth>[]),
         adminService.getBookingStats().catchError((_) => <String, dynamic>{}),
         adminService.getTopCars(limit: 10).catchError((_) => <TopCarItem>[]),
       ]);
@@ -111,7 +114,10 @@ class _AdminReportsScreenState extends State<AdminReportsScreen>
           indicatorWeight: 3,
           labelColor: AppColors.secondary,
           unselectedLabelColor: AppColors.textSecondary,
-          labelStyle: const TextStyle(fontWeight: FontWeight.bold, fontSize: 13),
+          labelStyle: const TextStyle(
+            fontWeight: FontWeight.bold,
+            fontSize: 13,
+          ),
           tabs: const [
             Tab(text: 'Doanh thu'),
             Tab(text: 'Đơn thuê'),
@@ -120,23 +126,25 @@ class _AdminReportsScreenState extends State<AdminReportsScreen>
         ),
       ),
       body: isLoading
-          ? const Center(child: CircularProgressIndicator(color: AppColors.secondary))
+          ? const Center(
+              child: CircularProgressIndicator(color: AppColors.secondary),
+            )
           : errorMessage != null
-              ? EmptyStateWidget(
-                  icon: Icons.error_outline_rounded,
-                  title: 'Lỗi tải báo cáo',
-                  message: errorMessage!,
-                  buttonText: 'Thử lại',
-                  onButtonPressed: loadAllReports,
-                )
-              : TabBarView(
-                  controller: tabController,
-                  children: [
-                    _buildRevenueTab(),
-                    _buildBookingTab(),
-                    _buildTopCarsTab(),
-                  ],
-                ),
+          ? EmptyStateWidget(
+              icon: Icons.error_outline_rounded,
+              title: 'Lỗi tải báo cáo',
+              message: errorMessage!,
+              buttonText: 'Thử lại',
+              onButtonPressed: loadAllReports,
+            )
+          : TabBarView(
+              controller: tabController,
+              children: [
+                _buildRevenueTab(),
+                _buildBookingTab(),
+                _buildTopCarsTab(),
+              ],
+            ),
     );
   }
 
@@ -158,10 +166,17 @@ class _AdminReportsScreenState extends State<AdminReportsScreen>
               children: [
                 const Text(
                   'Chọn năm báo cáo:',
-                  style: TextStyle(fontSize: 14, color: AppColors.textSecondary, fontWeight: FontWeight.w600),
+                  style: TextStyle(
+                    fontSize: 14,
+                    color: AppColors.textSecondary,
+                    fontWeight: FontWeight.w600,
+                  ),
                 ),
                 Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 4),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 14,
+                    vertical: 4,
+                  ),
                   decoration: BoxDecoration(
                     color: AppColors.surface,
                     borderRadius: BorderRadius.circular(12),
@@ -196,15 +211,14 @@ class _AdminReportsScreenState extends State<AdminReportsScreen>
             // Total Year Revenue Card
             Container(
               width: double.infinity,
-              padding: const EdgeInsets.all(20),
+              padding: const EdgeInsets.all(22),
               decoration: BoxDecoration(
+                color: AppColors.surface,
                 borderRadius: BorderRadius.circular(20),
-                gradient: const LinearGradient(
-                  colors: [Color(0xFF312E81), Color(0xFF1E1B4B)],
-                  begin: Alignment.topLeft,
-                  end: Alignment.bottomRight,
+                border: Border.all(
+                  color: AppColors.primary.withAlpha(110),
+                  width: 1.5,
                 ),
-                border: Border.all(color: AppColors.primaryLight.withAlpha(70)),
               ),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -212,25 +226,29 @@ class _AdminReportsScreenState extends State<AdminReportsScreen>
                   Text(
                     'TỔNG DOANH THU NĂM $selectedYear',
                     style: const TextStyle(
-                      fontSize: 12,
-                      fontWeight: FontWeight.w800,
-                      color: AppColors.emerald,
-                      letterSpacing: 0.5,
+                      fontSize: 11,
+                      fontWeight: FontWeight.w900,
+                      color: AppColors.primary,
+                      letterSpacing: 0.8,
                     ),
                   ),
                   const SizedBox(height: 10),
                   Text(
                     CurrencyFormatter.format(totalYearRevenue),
                     style: const TextStyle(
-                      fontSize: 26,
+                      fontSize: 28,
                       fontWeight: FontWeight.w900,
-                      color: Colors.white,
+                      color: AppColors.textPrimary,
+                      letterSpacing: -0.6,
                     ),
                   ),
                   const SizedBox(height: 4),
                   const Text(
                     'Tổng hợp dữ liệu doanh thu các giao dịch đã hoàn tất',
-                    style: TextStyle(fontSize: 12, color: AppColors.textSecondary),
+                    style: TextStyle(
+                      fontSize: 12,
+                      color: AppColors.textSecondary,
+                    ),
                   ),
                 ],
               ),
@@ -240,7 +258,11 @@ class _AdminReportsScreenState extends State<AdminReportsScreen>
             // Monthly Breakdown List
             const Text(
               'Chi tiết 12 tháng',
-              style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: AppColors.textPrimary),
+              style: TextStyle(
+                fontSize: 16,
+                fontWeight: FontWeight.bold,
+                color: AppColors.textPrimary,
+              ),
             ),
             const SizedBox(height: 12),
 
@@ -295,7 +317,9 @@ class _AdminReportsScreenState extends State<AdminReportsScreen>
                     style: TextStyle(
                       fontSize: 13,
                       fontWeight: FontWeight.bold,
-                      color: monthItem.revenue > 0 ? AppColors.secondary : AppColors.textMuted,
+                      color: monthItem.revenue > 0
+                          ? AppColors.secondary
+                          : AppColors.textMuted,
                     ),
                   ),
                 ],
@@ -308,7 +332,9 @@ class _AdminReportsScreenState extends State<AdminReportsScreen>
                   minHeight: 6,
                   backgroundColor: AppColors.surfaceLight,
                   valueColor: AlwaysStoppedAnimation<Color>(
-                    monthItem.revenue > 0 ? AppColors.secondary : AppColors.surfaceBorder,
+                    monthItem.revenue > 0
+                        ? AppColors.secondary
+                        : AppColors.surfaceBorder,
                   ),
                 ),
               ),
@@ -358,9 +384,23 @@ class _AdminReportsScreenState extends State<AdminReportsScreen>
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const Text('TỔNG SỐ ĐƠN THUÊ', style: TextStyle(fontSize: 12, color: AppColors.textMuted, fontWeight: FontWeight.w700)),
+                    const Text(
+                      'TỔNG SỐ ĐƠN THUÊ',
+                      style: TextStyle(
+                        fontSize: 12,
+                        color: AppColors.textMuted,
+                        fontWeight: FontWeight.w700,
+                      ),
+                    ),
                     const SizedBox(height: 6),
-                    Text('$total đơn', style: const TextStyle(fontSize: 26, fontWeight: FontWeight.w900, color: AppColors.textPrimary)),
+                    Text(
+                      '$total đơn',
+                      style: const TextStyle(
+                        fontSize: 26,
+                        fontWeight: FontWeight.w900,
+                        color: AppColors.textPrimary,
+                      ),
+                    ),
                   ],
                 ),
                 Container(
@@ -369,7 +409,11 @@ class _AdminReportsScreenState extends State<AdminReportsScreen>
                     color: AppColors.primary.withAlpha(30),
                     shape: BoxShape.circle,
                   ),
-                  child: const Icon(Icons.receipt_long_rounded, color: AppColors.secondary, size: 28),
+                  child: const Icon(
+                    Icons.receipt_long_rounded,
+                    color: AppColors.secondary,
+                    size: 28,
+                  ),
                 ),
               ],
             ),
@@ -378,21 +422,55 @@ class _AdminReportsScreenState extends State<AdminReportsScreen>
 
           const Text(
             'Phân bố theo trạng thái',
-            style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: AppColors.textPrimary),
+            style: TextStyle(
+              fontSize: 16,
+              fontWeight: FontWeight.bold,
+              color: AppColors.textPrimary,
+            ),
           ),
           const SizedBox(height: 12),
 
-          _buildStatusProgressTile('Chờ xác nhận (Pending)', pending, total, AppColors.amber),
-          _buildStatusProgressTile('Đã xác nhận (Confirmed)', confirmed, total, AppColors.secondary),
-          _buildStatusProgressTile('Đang thuê (Ongoing)', ongoing, total, AppColors.primaryLight),
-          _buildStatusProgressTile('Hoàn thành (Completed)', completed, total, AppColors.emerald),
-          _buildStatusProgressTile('Đã hủy (Cancelled)', cancelled, total, AppColors.rose),
+          _buildStatusProgressTile(
+            'Chờ xác nhận (Pending)',
+            pending,
+            total,
+            AppColors.amber,
+          ),
+          _buildStatusProgressTile(
+            'Đã xác nhận (Confirmed)',
+            confirmed,
+            total,
+            AppColors.secondary,
+          ),
+          _buildStatusProgressTile(
+            'Đang thuê (Ongoing)',
+            ongoing,
+            total,
+            AppColors.primaryLight,
+          ),
+          _buildStatusProgressTile(
+            'Hoàn thành (Completed)',
+            completed,
+            total,
+            AppColors.emerald,
+          ),
+          _buildStatusProgressTile(
+            'Đã hủy (Cancelled)',
+            cancelled,
+            total,
+            AppColors.rose,
+          ),
         ],
       ),
     );
   }
 
-  Widget _buildStatusProgressTile(String label, dynamic countVal, dynamic totalVal, Color color) {
+  Widget _buildStatusProgressTile(
+    String label,
+    dynamic countVal,
+    dynamic totalVal,
+    Color color,
+  ) {
     final count = (countVal as num?)?.toInt() ?? 0;
     final total = (totalVal as num?)?.toInt() ?? 1;
     final ratio = total > 0 ? (count / total).clamp(0.0, 1.0) : 0.0;
@@ -414,11 +492,19 @@ class _AdminReportsScreenState extends State<AdminReportsScreen>
             children: [
               Text(
                 label,
-                style: const TextStyle(fontSize: 14, fontWeight: FontWeight.bold, color: AppColors.textPrimary),
+                style: const TextStyle(
+                  fontSize: 14,
+                  fontWeight: FontWeight.bold,
+                  color: AppColors.textPrimary,
+                ),
               ),
               Text(
                 '$count đơn ($percentStr%)',
-                style: TextStyle(fontSize: 13, fontWeight: FontWeight.bold, color: color),
+                style: TextStyle(
+                  fontSize: 13,
+                  fontWeight: FontWeight.bold,
+                  color: color,
+                ),
               ),
             ],
           ),
@@ -478,7 +564,9 @@ class _AdminReportsScreenState extends State<AdminReportsScreen>
                 width: 38,
                 height: 38,
                 decoration: BoxDecoration(
-                  color: isTop3 ? rankColor.withAlpha(30) : AppColors.surfaceLight,
+                  color: isTop3
+                      ? rankColor.withAlpha(30)
+                      : AppColors.surfaceLight,
                   shape: BoxShape.circle,
                   border: Border.all(color: rankColor),
                 ),
@@ -513,7 +601,10 @@ class _AdminReportsScreenState extends State<AdminReportsScreen>
                     const SizedBox(height: 4),
                     Text(
                       '${item.bookingCount} lượt thuê thành công',
-                      style: const TextStyle(fontSize: 12, color: AppColors.textSecondary),
+                      style: const TextStyle(
+                        fontSize: 12,
+                        color: AppColors.textSecondary,
+                      ),
                     ),
                   ],
                 ),
@@ -523,7 +614,10 @@ class _AdminReportsScreenState extends State<AdminReportsScreen>
               Column(
                 crossAxisAlignment: CrossAxisAlignment.end,
                 children: [
-                  const Text('Doanh thu', style: TextStyle(fontSize: 11, color: AppColors.textMuted)),
+                  const Text(
+                    'Doanh thu',
+                    style: TextStyle(fontSize: 11, color: AppColors.textMuted),
+                  ),
                   const SizedBox(height: 2),
                   Text(
                     CurrencyFormatter.format(item.revenue),

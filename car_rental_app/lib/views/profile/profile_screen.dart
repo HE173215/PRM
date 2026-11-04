@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+
 import '../../services/auth_service.dart';
 import '../../utils/app_colors.dart';
 import '../../widgets/custom_button.dart';
@@ -55,9 +56,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
     final shouldLogout = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Đăng xuất'),
+        title: const Text('Đăng xuất tài khoản'),
         content: const Text(
-          'Bạn có chắc chắn muốn đăng xuất khỏi tài khoản không?',
+          'Bạn có chắc chắn muốn đăng xuất khỏi phiên làm việc hiện tại không?',
           style: TextStyle(color: AppColors.textSecondary, fontSize: 14),
         ),
         actions: [
@@ -90,13 +91,17 @@ class _ProfileScreenState extends State<ProfileScreen> {
         automaticallyImplyLeading: !widget.isTab,
         leading: !widget.isTab
             ? IconButton(
-                icon: const Icon(Icons.arrow_back_ios_new_rounded, size: 20),
+                icon: const Icon(Icons.arrow_back_ios_new_rounded, size: 18),
                 onPressed: () => Navigator.pop(context),
               )
             : null,
         title: const Text(
-          'Tài khoản',
-          style: TextStyle(fontWeight: FontWeight.w800, fontSize: 20),
+          'HỒ SƠ CÁ NHÂN',
+          style: TextStyle(
+            fontWeight: FontWeight.w900,
+            fontSize: 18,
+            letterSpacing: 0.5,
+          ),
         ),
         actions: [
           IconButton(
@@ -112,7 +117,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
   Widget buildBody() {
     if (isLoading) {
       return const Center(
-        child: CircularProgressIndicator(color: AppColors.secondary),
+        child: CircularProgressIndicator(color: AppColors.primary),
       );
     }
 
@@ -143,192 +148,147 @@ class _ProfileScreenState extends State<ProfileScreen> {
       padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
       child: Column(
         children: [
-          // User Avatar & Name Card
+          // Neo-Minimalist Identity Card
           Container(
             padding: const EdgeInsets.all(22),
             decoration: BoxDecoration(
               color: AppColors.surface,
-              borderRadius: BorderRadius.circular(22),
+              borderRadius: BorderRadius.circular(20),
               border: Border.all(color: AppColors.surfaceBorder),
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black.withAlpha(40),
-                  blurRadius: 16,
-                  offset: const Offset(0, 6),
-                ),
-              ],
             ),
-            child: Column(
+            child: Row(
               children: [
-                // Glowing Avatar
                 Container(
-                  padding: const EdgeInsets.all(4),
+                  width: 68,
+                  height: 68,
                   decoration: BoxDecoration(
-                    shape: BoxShape.circle,
-                    gradient: AppColors.primaryGradient,
+                    color: AppColors.primary,
+                    borderRadius: BorderRadius.circular(18),
                     boxShadow: [
                       BoxShadow(
-                        color: AppColors.primary.withAlpha(90),
-                        blurRadius: 20,
-                        offset: const Offset(0, 4),
+                        color: AppColors.primary.withAlpha(70),
+                        blurRadius: 18,
+                        offset: const Offset(0, 6),
                       ),
                     ],
                   ),
-                  child: CircleAvatar(
-                    radius: 44,
-                    backgroundColor: AppColors.surfaceLight,
-                    child: Text(
-                      fullName.isNotEmpty ? fullName[0].toUpperCase() : 'U',
-                      style: const TextStyle(
-                        fontSize: 32,
-                        fontWeight: FontWeight.w900,
-                        color: Colors.white,
-                      ),
+                  alignment: Alignment.center,
+                  child: Text(
+                    fullName.isNotEmpty ? fullName[0].toUpperCase() : 'U',
+                    style: const TextStyle(
+                      fontSize: 28,
+                      fontWeight: FontWeight.w900,
+                      color: Colors.white,
                     ),
                   ),
                 ),
-                const SizedBox(height: 16),
-
-                // Name
-                Text(
-                  fullName,
-                  style: const TextStyle(
-                    fontSize: 22,
-                    fontWeight: FontWeight.bold,
-                    color: AppColors.textPrimary,
-                  ),
-                ),
-                const SizedBox(height: 4),
-
-                // Email
-                Text(
-                  email,
-                  style: const TextStyle(
-                    fontSize: 13,
-                    color: AppColors.textSecondary,
-                  ),
-                ),
-                const SizedBox(height: 12),
-
-                // Role badge
-                Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 5),
-                  decoration: BoxDecoration(
-                    color: isAdmin
-                        ? AppColors.amber.withAlpha(30)
-                        : AppColors.secondary.withAlpha(30),
-                    borderRadius: BorderRadius.circular(10),
-                    border: Border.all(
-                      color: isAdmin
-                          ? AppColors.amber.withAlpha(80)
-                          : AppColors.secondary.withAlpha(80),
-                    ),
-                  ),
-                  child: Row(
-                    mainAxisSize: MainAxisSize.min,
+                const SizedBox(width: 16),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Icon(
-                        isAdmin
-                            ? Icons.admin_panel_settings_rounded
-                            : Icons.verified_user_rounded,
-                        size: 14,
-                        color: isAdmin ? AppColors.amber : AppColors.secondary,
-                      ),
-                      const SizedBox(width: 6),
-                      Text(
-                        isAdmin ? 'QUẢN TRỊ VIÊN' : 'THÀNH VIÊN',
-                        style: TextStyle(
-                          fontSize: 11,
-                          fontWeight: FontWeight.w800,
-                          color: isAdmin ? AppColors.amber : AppColors.secondary,
-                          letterSpacing: 0.5,
+                      Container(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 8,
+                          vertical: 3,
+                        ),
+                        decoration: BoxDecoration(
+                          color: isAdmin
+                              ? AppColors.amber.withAlpha(30)
+                              : AppColors.secondary.withAlpha(25),
+                          borderRadius: BorderRadius.circular(6),
+                          border: Border.all(
+                            color: isAdmin
+                                ? AppColors.amber.withAlpha(90)
+                                : AppColors.secondary.withAlpha(90),
+                          ),
+                        ),
+                        child: Text(
+                          isAdmin ? 'SYSTEM ADMIN' : 'VERIFIED MEMBER',
+                          style: TextStyle(
+                            fontSize: 9,
+                            fontWeight: FontWeight.w900,
+                            color: isAdmin
+                                ? AppColors.amber
+                                : AppColors.secondary,
+                            letterSpacing: 0.8,
+                          ),
                         ),
                       ),
+                      const SizedBox(height: 6),
+                      Text(
+                        fullName,
+                        style: const TextStyle(
+                          fontSize: 20,
+                          fontWeight: FontWeight.w900,
+                          color: AppColors.textPrimary,
+                          letterSpacing: -0.5,
+                        ),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                      const SizedBox(height: 2),
+                      Text(
+                        email,
+                        style: const TextStyle(
+                          fontSize: 13,
+                          color: AppColors.textSecondary,
+                        ),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                      ),
                     ],
                   ),
-                ),
-              ],
-            ),
-          ),
-          const SizedBox(height: 24),
-
-          // User Information Section
-          Container(
-            padding: const EdgeInsets.all(18),
-            decoration: BoxDecoration(
-              color: AppColors.surface,
-              borderRadius: BorderRadius.circular(18),
-              border: Border.all(color: AppColors.surfaceBorder),
-            ),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                const Text(
-                  'Thông tin liên hệ',
-                  style: TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold,
-                    color: AppColors.textPrimary,
-                  ),
-                ),
-                const SizedBox(height: 14),
-                _profileDetailItem(
-                  icon: Icons.email_outlined,
-                  title: 'Email',
-                  value: email,
-                ),
-                const Divider(height: 20, color: AppColors.surfaceBorder),
-                _profileDetailItem(
-                  icon: Icons.phone_outlined,
-                  title: 'Số điện thoại',
-                  value: phone,
                 ),
               ],
             ),
           ),
           const SizedBox(height: 20),
 
-          // Quick actions / Admin panel
+          // Admin Console Access Banner
           if (isAdmin) ...[
             Container(
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(18),
-                gradient: const LinearGradient(
-                  colors: [Color(0xFF312E81), Color(0xFF1E1B4B)],
-                  begin: Alignment.topLeft,
-                  end: Alignment.bottomRight,
-                ),
-                border: Border.all(color: AppColors.primaryLight.withAlpha(80)),
+                color: AppColors.surface,
+                border: Border.all(color: AppColors.primary, width: 1.5),
               ),
               child: ListTile(
-                contentPadding: const EdgeInsets.symmetric(horizontal: 18, vertical: 8),
+                contentPadding: const EdgeInsets.symmetric(
+                  horizontal: 18,
+                  vertical: 10,
+                ),
                 leading: Container(
                   padding: const EdgeInsets.all(10),
                   decoration: BoxDecoration(
-                    color: AppColors.amber.withAlpha(40),
-                    shape: BoxShape.circle,
+                    color: AppColors.primary.withAlpha(30),
+                    borderRadius: BorderRadius.circular(12),
                   ),
                   child: const Icon(
-                    Icons.admin_panel_settings_rounded,
-                    color: AppColors.amber,
+                    Icons.terminal_rounded,
+                    color: AppColors.primary,
                   ),
                 ),
                 title: const Text(
-                  'Trung tâm Quản trị (Admin CMS)',
+                  'TRUNG TÂM QUẢN TRỊ // CMS',
                   style: TextStyle(
-                    fontWeight: FontWeight.bold,
-                    color: Colors.white,
-                    fontSize: 15,
+                    fontWeight: FontWeight.w900,
+                    color: AppColors.textPrimary,
+                    fontSize: 14,
+                    letterSpacing: 0.4,
                   ),
                 ),
                 subtitle: const Text(
-                  'Dashboard, Quản lý Xe, Đơn thuê, Users & Báo cáo',
-                  style: TextStyle(color: AppColors.textSecondary, fontSize: 12),
+                  'Quản lý Đội xe, Đơn thuê, Người dùng & Báo cáo doanh thu',
+                  style: TextStyle(
+                    color: AppColors.textSecondary,
+                    fontSize: 12,
+                  ),
                 ),
                 trailing: const Icon(
-                  Icons.arrow_forward_ios_rounded,
-                  size: 14,
-                  color: Colors.white,
+                  Icons.north_east_rounded,
+                  size: 16,
+                  color: AppColors.primary,
                 ),
                 onTap: () {
                   Navigator.push(
@@ -343,7 +303,44 @@ class _ProfileScreenState extends State<ProfileScreen> {
             const SizedBox(height: 20),
           ],
 
-          // Other menu options
+          // Contact Information
+          Container(
+            padding: const EdgeInsets.all(18),
+            decoration: BoxDecoration(
+              color: AppColors.surface,
+              borderRadius: BorderRadius.circular(18),
+              border: Border.all(color: AppColors.surfaceBorder),
+            ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const Text(
+                  'THÔNG TIN ĐỊNH DANH',
+                  style: TextStyle(
+                    fontSize: 11,
+                    fontWeight: FontWeight.w900,
+                    color: AppColors.textMuted,
+                    letterSpacing: 0.8,
+                  ),
+                ),
+                const SizedBox(height: 16),
+                _profileDetailItem(
+                  icon: Icons.alternate_email_rounded,
+                  title: 'ĐỊA CHỈ EMAIL',
+                  value: email,
+                ),
+                const Divider(height: 24, color: AppColors.surfaceBorder),
+                _profileDetailItem(
+                  icon: Icons.phone_outlined,
+                  title: 'SỐ ĐIỆN THOẠI',
+                  value: phone,
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(height: 20),
+
+          // Menu Options
           Container(
             decoration: BoxDecoration(
               color: AppColors.surface,
@@ -354,7 +351,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
               children: [
                 _menuTile(
                   icon: Icons.receipt_long_outlined,
-                  title: 'Lịch sử thuê xe',
+                  title: 'Lịch sử đặt xe',
                   onTap: () {
                     Navigator.push(
                       context,
@@ -366,21 +363,27 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 ),
                 const Divider(height: 1, color: AppColors.surfaceBorder),
                 _menuTile(
-                  icon: Icons.shield_outlined,
-                  title: 'Chính sách bảo mật & Điều khoản',
+                  icon: Icons.verified_user_outlined,
+                  title: 'Chính sách bảo hiểm & Điều khoản',
                   onTap: () {
                     ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(content: Text('Đang cập nhật điều khoản dịch vụ')),
+                      const SnackBar(
+                        content: Text(
+                          'Tất cả chuyến đi đều được bảo hiểm 2 chiều',
+                        ),
+                      ),
                     );
                   },
                 ),
                 const Divider(height: 1, color: AppColors.surfaceBorder),
                 _menuTile(
-                  icon: Icons.headset_mic_outlined,
-                  title: 'Trung tâm hỗ trợ 24/7',
+                  icon: Icons.support_agent_rounded,
+                  title: 'Tổng đài cứu hộ & Hỗ trợ 24/7',
                   onTap: () {
                     ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(content: Text('Hotline hỗ trợ: 1900 8888')),
+                      const SnackBar(
+                        content: Text('Hotline hỗ trợ khẩn cấp: 1900 8888'),
+                      ),
                     );
                   },
                 ),
@@ -389,9 +392,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
           ),
           const SizedBox(height: 28),
 
-          // Logout Button
           CustomButton(
-            text: 'Đăng xuất',
+            text: 'ĐĂNG XUẤT TÀI KHOẢN',
             isOutlined: true,
             icon: Icons.logout_rounded,
             backgroundColor: AppColors.rose.withAlpha(20),
@@ -410,16 +412,25 @@ class _ProfileScreenState extends State<ProfileScreen> {
   }) {
     return Row(
       children: [
-        Icon(icon, color: AppColors.secondary, size: 20),
-        const SizedBox(width: 12),
+        Container(
+          padding: const EdgeInsets.all(10),
+          decoration: BoxDecoration(
+            color: AppColors.surfaceLight,
+            borderRadius: BorderRadius.circular(10),
+          ),
+          child: Icon(icon, color: AppColors.primary, size: 18),
+        ),
+        const SizedBox(width: 14),
         Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
               title,
               style: const TextStyle(
-                fontSize: 11,
+                fontSize: 10,
+                fontWeight: FontWeight.w800,
                 color: AppColors.textMuted,
+                letterSpacing: 0.6,
               ),
             ),
             const SizedBox(height: 2),
@@ -427,7 +438,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
               value,
               style: const TextStyle(
                 fontSize: 14,
-                fontWeight: FontWeight.w600,
+                fontWeight: FontWeight.w800,
                 color: AppColors.textPrimary,
               ),
             ),
@@ -444,18 +455,18 @@ class _ProfileScreenState extends State<ProfileScreen> {
   }) {
     return ListTile(
       onTap: onTap,
-      leading: Icon(icon, color: AppColors.textSecondary, size: 22),
+      leading: Icon(icon, color: AppColors.textSecondary, size: 20),
       title: Text(
         title,
         style: const TextStyle(
           fontSize: 14,
-          fontWeight: FontWeight.w600,
+          fontWeight: FontWeight.w700,
           color: AppColors.textPrimary,
         ),
       ),
       trailing: const Icon(
-        Icons.arrow_forward_ios_rounded,
-        size: 13,
+        Icons.north_east_rounded,
+        size: 14,
         color: AppColors.textMuted,
       ),
     );

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+
 import '../utils/app_colors.dart';
 
 class CustomTextField extends StatelessWidget {
@@ -38,12 +39,12 @@ class CustomTextField extends StatelessWidget {
       children: [
         if (label != null) ...[
           Text(
-            label!,
+            label!.toUpperCase(),
             style: const TextStyle(
-              fontSize: 14,
-              fontWeight: FontWeight.w600,
+              fontSize: 11,
+              fontWeight: FontWeight.w800,
               color: AppColors.textSecondary,
-              letterSpacing: 0.1,
+              letterSpacing: 0.8,
             ),
           ),
           const SizedBox(height: 8),
@@ -60,11 +61,13 @@ class CustomTextField extends StatelessWidget {
           style: const TextStyle(
             color: AppColors.textPrimary,
             fontSize: 15,
-            fontWeight: FontWeight.w500,
+            fontWeight: FontWeight.w600,
           ),
           decoration: InputDecoration(
             hintText: hintText,
-            prefixIcon: prefixIcon != null ? Icon(prefixIcon, size: 20) : null,
+            prefixIcon: prefixIcon != null
+                ? Icon(prefixIcon, size: 20, color: AppColors.textSecondary)
+                : null,
             suffixIcon: suffixIcon,
           ),
         ),

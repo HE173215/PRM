@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+
 import '../../models/car_model.dart';
 import '../../services/car_service.dart';
 import '../../utils/app_colors.dart';
@@ -7,6 +8,7 @@ import '../../widgets/section_header.dart';
 import '../booking/booking_history_screen.dart';
 import '../car/car_list_screen.dart';
 import '../profile/profile_screen.dart';
+import '../notification/notification_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -17,11 +19,8 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   int _currentIndex = 0;
-
-  // Selected category in home tab
   String _selectedCategory = 'Tất cả';
 
-  // State for home content
   final CarService _carService = CarService();
   List<CarModel> _featuredCars = [];
   bool _isLoading = true;
@@ -51,9 +50,7 @@ class _HomeScreenState extends State<HomeScreen> {
   void _navigateToCarList({String? brand}) {
     Navigator.push(
       context,
-      MaterialPageRoute(
-        builder: (_) => CarListScreen(initialBrand: brand),
-      ),
+      MaterialPageRoute(builder: (_) => CarListScreen(initialBrand: brand)),
     );
   }
 
@@ -78,7 +75,7 @@ class _HomeScreenState extends State<HomeScreen> {
     return SafeArea(
       child: RefreshIndicator(
         onRefresh: _loadFeaturedCars,
-        color: AppColors.secondary,
+        color: AppColors.primary,
         backgroundColor: AppColors.surface,
         child: SingleChildScrollView(
           physics: const AlwaysScrollableScrollPhysics(),
@@ -86,21 +83,21 @@ class _HomeScreenState extends State<HomeScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // Top Bar with Greeting & Notification
+              // Top Bar with Brand & Quick Status
               _buildTopHeader(),
-              const SizedBox(height: 24),
+              const SizedBox(height: 22),
 
               // Search Trigger Bar
               _buildSearchBar(),
               const SizedBox(height: 24),
 
-              // Hero Promo Banner
+              // High-Contrast Neo-Minimalist Hero Promo Banner
               _buildHeroBanner(),
               const SizedBox(height: 28),
 
               // Categories Filter
               SectionHeader(
-                title: 'Loại xe',
+                title: 'Thương hiệu',
                 actionText: 'Tất cả',
                 onActionTap: () => _navigateToCarList(),
               ),
@@ -110,7 +107,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
               // Featured Cars (Horizontal Carousel)
               SectionHeader(
-                title: 'Xe nổi bật hôm nay',
+                title: 'Đội xe công nghệ',
                 actionText: 'Xem thêm',
                 onActionTap: () => _navigateToCarList(),
               ),
@@ -120,7 +117,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
               // Recommended For You (Vertical List preview)
               SectionHeader(
-                title: 'Dành cho bạn',
+                title: 'Đề xuất hàng đầu',
                 actionText: 'Xem tất cả',
                 onActionTap: () => _navigateToCarList(),
               ),
@@ -143,26 +140,34 @@ class _HomeScreenState extends State<HomeScreen> {
           children: [
             Row(
               children: [
-                const Text(
-                  'Xin chào',
-                  style: TextStyle(
-                    fontSize: 14,
-                    color: AppColors.textSecondary,
-                    fontWeight: FontWeight.w500,
+                Container(
+                  width: 8,
+                  height: 8,
+                  decoration: const BoxDecoration(
+                    color: AppColors.emerald,
+                    shape: BoxShape.circle,
                   ),
                 ),
-                const SizedBox(width: 4),
-                const Text('👋', style: TextStyle(fontSize: 14)),
+                const SizedBox(width: 6),
+                const Text(
+                  'VELODRIVE // HỆ THỐNG SẴN SÀNG',
+                  style: TextStyle(
+                    fontSize: 10,
+                    color: AppColors.textSecondary,
+                    fontWeight: FontWeight.w900,
+                    letterSpacing: 1.0,
+                  ),
+                ),
               ],
             ),
             const SizedBox(height: 4),
             const Text(
-              'Thuê xe ngay hôm nay',
+              'Chọn xe của bạn.',
               style: TextStyle(
-                fontSize: 22,
-                fontWeight: FontWeight.w800,
+                fontSize: 26,
+                fontWeight: FontWeight.w900,
                 color: AppColors.textPrimary,
-                letterSpacing: -0.5,
+                letterSpacing: -0.8,
               ),
             ),
           ],
@@ -170,7 +175,7 @@ class _HomeScreenState extends State<HomeScreen> {
         Container(
           decoration: BoxDecoration(
             color: AppColors.surface,
-            shape: BoxShape.circle,
+            borderRadius: BorderRadius.circular(14),
             border: Border.all(color: AppColors.surfaceBorder, width: 1),
           ),
           child: IconButton(
@@ -179,11 +184,10 @@ class _HomeScreenState extends State<HomeScreen> {
               color: AppColors.textPrimary,
               size: 22,
             ),
-            onPressed: () {
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(content: Text('Không có thông báo mới')),
-              );
-            },
+            onPressed: () => Navigator.push(
+              context,
+              MaterialPageRoute(builder: (_) => const NotificationScreen()),
+            ),
           ),
         ),
       ],
@@ -194,19 +198,43 @@ class _HomeScreenState extends State<HomeScreen> {
     return GestureDetector(
       onTap: () => _navigateToCarList(),
       child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 14),
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
         decoration: BoxDecoration(
           color: AppColors.surface,
-          borderRadius: BorderRadius.circular(16),
+          borderRadius: BorderRadius.circular(14),
           border: Border.all(color: AppColors.surfaceBorder, width: 1),
         ),
-        child: const Row(
+        child: Row(
           children: [
-            Icon(Icons.search_rounded, color: AppColors.secondary, size: 22),
-            SizedBox(width: 12),
-            Text(
-              'Tìm kiếm theo tên xe, hãng xe, địa điểm...',
-              style: TextStyle(color: AppColors.textMuted, fontSize: 14),
+            const Icon(
+              Icons.search_rounded,
+              color: AppColors.primary,
+              size: 22,
+            ),
+            const SizedBox(width: 12),
+            const Expanded(
+              child: Text(
+                'Tìm theo mẫu xe, thương hiệu, khu vực...',
+                style: TextStyle(
+                  color: AppColors.textMuted,
+                  fontSize: 14,
+                  fontWeight: FontWeight.w500,
+                ),
+                overflow: TextOverflow.ellipsis,
+              ),
+            ),
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+              decoration: BoxDecoration(
+                color: AppColors.surfaceLight,
+                borderRadius: BorderRadius.circular(6),
+                border: Border.all(color: AppColors.surfaceBorder),
+              ),
+              child: const Icon(
+                Icons.tune_rounded,
+                size: 16,
+                color: AppColors.textPrimary,
+              ),
             ),
           ],
         ),
@@ -217,92 +245,127 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget _buildHeroBanner() {
     return Container(
       width: double.infinity,
-      padding: const EdgeInsets.all(22),
+      padding: const EdgeInsets.all(24),
       decoration: BoxDecoration(
+        color: AppColors.surface,
         borderRadius: BorderRadius.circular(22),
-        gradient: const LinearGradient(
-          colors: [Color(0xFF3730A3), Color(0xFF1E1B4B)],
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-        ),
+        border: Border.all(color: AppColors.primary.withAlpha(110), width: 1.5),
         boxShadow: [
           BoxShadow(
-            color: const Color(0xFF3730A3).withAlpha(80),
-            blurRadius: 20,
-            offset: const Offset(0, 8),
+            color: AppColors.primary.withAlpha(35),
+            blurRadius: 28,
+            offset: const Offset(0, 10),
           ),
         ],
-        border: Border.all(color: AppColors.primaryLight.withAlpha(50)),
       ),
       child: Stack(
         children: [
-          // Background decorative circle
           Positioned(
-            right: -20,
-            bottom: -20,
-            child: Container(
-              width: 120,
-              height: 120,
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                color: Colors.white.withAlpha(10),
-              ),
+            right: -15,
+            top: -15,
+            child: Icon(
+              Icons.bolt_rounded,
+              size: 130,
+              color: AppColors.primary.withAlpha(22),
             ),
           ),
           Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Container(
-                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-                decoration: BoxDecoration(
-                  color: AppColors.secondary.withAlpha(40),
-                  borderRadius: BorderRadius.circular(8),
-                  border: Border.all(color: AppColors.secondary.withAlpha(80)),
-                ),
-                child: const Text(
-                  'ƯU ĐÃI ĐẶC BIỆT',
-                  style: TextStyle(
-                    color: AppColors.secondary,
-                    fontSize: 11,
-                    fontWeight: FontWeight.w800,
-                    letterSpacing: 0.5,
+              Row(
+                children: [
+                  Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 10,
+                      vertical: 4,
+                    ),
+                    decoration: BoxDecoration(
+                      color: AppColors.primary,
+                      borderRadius: BorderRadius.circular(6),
+                    ),
+                    child: const Text(
+                      'PROMO // 20% OFF',
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 10,
+                        fontWeight: FontWeight.w900,
+                        letterSpacing: 0.8,
+                      ),
+                    ),
                   ),
-                ),
-              ),
-              const SizedBox(height: 12),
-              const Text(
-                'Giảm 20% cho\nchuyến đi đầu tiên',
-                style: TextStyle(
-                  fontSize: 22,
-                  fontWeight: FontWeight.w900,
-                  color: Colors.white,
-                  height: 1.2,
-                ),
+                  const SizedBox(width: 8),
+                  Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 10,
+                      vertical: 4,
+                    ),
+                    decoration: BoxDecoration(
+                      color: AppColors.secondary.withAlpha(25),
+                      borderRadius: BorderRadius.circular(6),
+                      border: Border.all(
+                        color: AppColors.secondary.withAlpha(90),
+                      ),
+                    ),
+                    child: const Text(
+                      'BẢO HIỂM 100%',
+                      style: TextStyle(
+                        color: AppColors.secondary,
+                        fontSize: 10,
+                        fontWeight: FontWeight.w900,
+                        letterSpacing: 0.6,
+                      ),
+                    ),
+                  ),
+                ],
               ),
               const SizedBox(height: 16),
+              const Text(
+                'Trải nghiệm xe tự lái\nthế hệ mới.',
+                style: TextStyle(
+                  fontSize: 24,
+                  fontWeight: FontWeight.w900,
+                  color: AppColors.textPrimary,
+                  height: 1.15,
+                  letterSpacing: -0.6,
+                ),
+              ),
+              const SizedBox(height: 8),
+              const Text(
+                'Nhận xe nhanh trong 5 phút • Không phí ẩn',
+                style: TextStyle(
+                  fontSize: 13,
+                  color: AppColors.textSecondary,
+                  fontWeight: FontWeight.w500,
+                ),
+              ),
+              const SizedBox(height: 18),
               ElevatedButton(
                 onPressed: () => _navigateToCarList(),
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: AppColors.secondary,
-                  foregroundColor: Colors.black,
-                  padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 10),
+                  backgroundColor: AppColors.textPrimary,
+                  foregroundColor: AppColors.background,
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 18,
+                    vertical: 12,
+                  ),
                   minimumSize: Size.zero,
                   shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12),
+                    borderRadius: BorderRadius.circular(10),
                   ),
                 ),
                 child: const Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     Text(
-                      'Khám phá ngay',
+                      'KHÁM PHÁ ĐỘI XE',
                       style: TextStyle(
-                        fontSize: 13,
-                        fontWeight: FontWeight.w800,
+                        fontSize: 12,
+                        fontWeight: FontWeight.w900,
+                        letterSpacing: 0.5,
                       ),
                     ),
                     SizedBox(width: 6),
-                    Icon(Icons.arrow_forward_rounded, size: 14),
+                    Icon(Icons.north_east_rounded, size: 15),
                   ],
                 ),
               ),
@@ -315,16 +378,20 @@ class _HomeScreenState extends State<HomeScreen> {
 
   Widget _buildCategoryList() {
     final categories = [
-      {'name': 'Tất cả', 'icon': Icons.apps_rounded, 'brand': null},
-      {'name': 'VinFast', 'icon': Icons.electric_car_rounded, 'brand': 'VinFast'},
-      {'name': 'Mazda', 'icon': Icons.directions_car_rounded, 'brand': 'Mazda'},
-      {'name': 'Toyota', 'icon': Icons.directions_car_filled_rounded, 'brand': 'Toyota'},
-      {'name': 'Hyundai', 'icon': Icons.airport_shuttle_rounded, 'brand': 'Hyundai'},
-      {'name': 'Kia', 'icon': Icons.car_rental_rounded, 'brand': 'Kia'},
+      {'name': 'Tất cả', 'icon': Icons.grid_view_rounded, 'brand': null},
+      {'name': 'VinFast', 'icon': Icons.bolt_rounded, 'brand': 'VinFast'},
+      {'name': 'Mazda', 'icon': Icons.speed_rounded, 'brand': 'Mazda'},
+      {
+        'name': 'Toyota',
+        'icon': Icons.directions_car_filled_rounded,
+        'brand': 'Toyota',
+      },
+      {'name': 'Hyundai', 'icon': Icons.navigation_rounded, 'brand': 'Hyundai'},
+      {'name': 'Kia', 'icon': Icons.local_taxi_rounded, 'brand': 'Kia'},
     ];
 
     return SizedBox(
-      height: 90,
+      height: 46,
       child: ListView.builder(
         scrollDirection: Axis.horizontal,
         itemCount: categories.length,
@@ -343,36 +410,37 @@ class _HomeScreenState extends State<HomeScreen> {
               }
             },
             child: Container(
-              width: 82,
-              margin: const EdgeInsets.only(right: 12),
+              margin: const EdgeInsets.only(right: 10),
+              padding: const EdgeInsets.symmetric(horizontal: 16),
               decoration: BoxDecoration(
                 color: isSelected ? AppColors.primary : AppColors.surface,
-                borderRadius: BorderRadius.circular(18),
+                borderRadius: BorderRadius.circular(12),
                 border: Border.all(
                   color: isSelected
-                      ? AppColors.primaryLight
+                      ? AppColors.primary
                       : AppColors.surfaceBorder,
                   width: 1,
                 ),
               ),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
                 children: [
                   Icon(
-                    cat['icon'] as IconData,
-                    color: isSelected ? Colors.white : AppColors.secondary,
-                    size: 28,
+                    cat['name'] == 'VinFast'
+                        ? Icons.bolt_rounded
+                        : Icons.directions_car_filled_rounded,
+                    color: isSelected ? Colors.white : AppColors.primary,
+                    size: 16,
                   ),
-                  const SizedBox(height: 8),
+                  const SizedBox(width: 8),
                   Text(
-                    cat['name'] as String,
+                    (cat['name'] as String).toUpperCase(),
                     style: TextStyle(
                       fontSize: 12,
-                      fontWeight: isSelected ? FontWeight.bold : FontWeight.w500,
-                      color: isSelected ? Colors.white : AppColors.textSecondary,
+                      fontWeight: FontWeight.w900,
+                      letterSpacing: 0.5,
+                      color: isSelected ? Colors.white : AppColors.textPrimary,
                     ),
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
                   ),
                 ],
               ),
@@ -388,7 +456,7 @@ class _HomeScreenState extends State<HomeScreen> {
       return const SizedBox(
         height: 220,
         child: Center(
-          child: CircularProgressIndicator(color: AppColors.secondary),
+          child: CircularProgressIndicator(color: AppColors.primary),
         ),
       );
     }
@@ -403,14 +471,14 @@ class _HomeScreenState extends State<HomeScreen> {
           border: Border.all(color: AppColors.surfaceBorder),
         ),
         child: const Text(
-          'Chưa có xe nổi bật',
+          'Chưa có xe trong danh sách',
           style: TextStyle(color: AppColors.textSecondary),
         ),
       );
     }
 
     return SizedBox(
-      height: 235,
+      height: 245,
       child: ListView.builder(
         scrollDirection: Axis.horizontal,
         itemCount: _featuredCars.length,
@@ -427,7 +495,7 @@ class _HomeScreenState extends State<HomeScreen> {
       return const SizedBox(
         height: 150,
         child: Center(
-          child: CircularProgressIndicator(color: AppColors.secondary),
+          child: CircularProgressIndicator(color: AppColors.primary),
         ),
       );
     }
@@ -446,19 +514,24 @@ class _HomeScreenState extends State<HomeScreen> {
     return Container(
       decoration: const BoxDecoration(
         color: AppColors.surface,
-        border: Border(top: BorderSide(color: AppColors.surfaceBorder, width: 1)),
+        border: Border(
+          top: BorderSide(color: AppColors.surfaceBorder, width: 1),
+        ),
       ),
       child: BottomNavigationBar(
         currentIndex: _currentIndex,
         backgroundColor: Colors.transparent,
         elevation: 0,
         type: BottomNavigationBarType.fixed,
-        selectedItemColor: AppColors.secondary,
+        selectedItemColor: AppColors.primary,
         unselectedItemColor: AppColors.textMuted,
-        selectedFontSize: 12,
-        unselectedFontSize: 12,
-        selectedLabelStyle: const TextStyle(fontWeight: FontWeight.w700),
-        unselectedLabelStyle: const TextStyle(fontWeight: FontWeight.w500),
+        selectedFontSize: 11,
+        unselectedFontSize: 11,
+        selectedLabelStyle: const TextStyle(
+          fontWeight: FontWeight.w900,
+          letterSpacing: 0.4,
+        ),
+        unselectedLabelStyle: const TextStyle(fontWeight: FontWeight.w600),
         onTap: (index) {
           setState(() {
             _currentIndex = index;
@@ -466,24 +539,24 @@ class _HomeScreenState extends State<HomeScreen> {
         },
         items: const [
           BottomNavigationBarItem(
-            icon: Icon(Icons.home_outlined),
-            activeIcon: Icon(Icons.home_filled),
-            label: 'Trang chủ',
+            icon: Icon(Icons.grid_view_outlined),
+            activeIcon: Icon(Icons.grid_view_rounded),
+            label: 'TRANG CHỦ',
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.directions_car_outlined),
             activeIcon: Icon(Icons.directions_car_filled_rounded),
-            label: 'Xe',
+            label: 'ĐỘI XE',
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.receipt_long_outlined),
             activeIcon: Icon(Icons.receipt_long_rounded),
-            label: 'Đơn thuê',
+            label: 'ĐƠN THUÊ',
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.person_outline_rounded),
             activeIcon: Icon(Icons.person_rounded),
-            label: 'Cá nhân',
+            label: 'TÀI KHOẢN',
           ),
         ],
       ),

@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+
 import '../../models/car_model.dart';
+import '../../models/booking_model.dart';
 import '../../services/booking_service.dart';
 import '../../utils/app_colors.dart';
 import '../../utils/currency_formatter.dart';
@@ -22,7 +24,37 @@ class _BookingScreenState extends State<BookingScreen> {
 
   DateTime? startDate;
   DateTime? endDate;
+  List<BookingPeriod> bookedPeriods = [];
   bool isLoading = false;
+  bool isAvailabilityLoading = true;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadAvailability();
+  }
+
+  Future<void> _loadAvailability() async {
+    try {
+      final periods = await bookingService.getCarAvailability(widget.car.id);
+      if (!mounted) return;
+      setState(() {
+        bookedPeriods = periods;
+        isAvailabilityLoading = false;
+      });
+    } catch (error) {
+      if (!mounted) return;
+      setState(() {
+        isAvailabilityLoading = false;
+      });
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(error.toString().replaceFirst('Exception: ', '')),
+          backgroundColor: AppColors.rose,
+        ),
+      );
+    }
+  }
 
   @override
   void dispose() {
@@ -32,17 +64,19 @@ class _BookingScreenState extends State<BookingScreen> {
 
   Future<void> selectStartDate() async {
     final now = DateTime.now();
+    final today = DateTime(now.year, now.month, now.day);
     final selected = await showDatePicker(
       context: context,
       initialDate: startDate ?? now,
-      firstDate: DateTime(now.year, now.month, now.day),
+      firstDate: today,
       lastDate: now.add(const Duration(days: 365)),
+      selectableDayPredicate: (date) => _isStartDateAvailable(date),
       builder: (context, child) {
         return Theme(
           data: Theme.of(context).copyWith(
             colorScheme: const ColorScheme.dark(
-              primary: AppColors.secondary,
-              onPrimary: Colors.black,
+              primary: AppColors.primary,
+              onPrimary: Colors.white,
               surface: AppColors.surface,
               onSurface: AppColors.textPrimary,
             ),
@@ -79,12 +113,13 @@ class _BookingScreenState extends State<BookingScreen> {
       initialDate: endDate ?? minEndDate,
       firstDate: minEndDate,
       lastDate: startDate!.add(const Duration(days: 365)),
+      selectableDayPredicate: (date) => _isEndDateAvailable(date),
       builder: (context, child) {
         return Theme(
           data: Theme.of(context).copyWith(
             colorScheme: const ColorScheme.dark(
-              primary: AppColors.secondary,
-              onPrimary: Colors.black,
+              primary: AppColors.primary,
+              onPrimary: Colors.white,
               surface: AppColors.surface,
               onSurface: AppColors.textPrimary,
             ),
@@ -101,6 +136,22 @@ class _BookingScreenState extends State<BookingScreen> {
     });
   }
 
+  bool _isStartDateAvailable(DateTime date) {
+    return !bookedPeriods.any(
+      (period) =>
+          date.isBefore(period.endDate) && !date.isBefore(period.startDate),
+    );
+  }
+
+  bool _isEndDateAvailable(DateTime date) {
+    if (startDate == null) return false;
+
+    return !bookedPeriods.any(
+      (period) =>
+          startDate!.isBefore(period.endDate) && date.isAfter(period.startDate),
+    );
+  }
+
   int get totalDays {
     if (startDate == null || endDate == null) return 0;
     return endDate!.difference(startDate!).inDays;
@@ -115,6 +166,10 @@ class _BookingScreenState extends State<BookingScreen> {
     return '${date.day.toString().padLeft(2, '0')}/'
         '${date.month.toString().padLeft(2, '0')}/'
         '${date.year}';
+  }
+
+  String formatBookedPeriod(BookingPeriod period) {
+    return '${formatDate(period.startDate)} - ${formatDate(period.endDate)}';
   }
 
   Future<void> submitBooking() async {
@@ -172,51 +227,49 @@ class _BookingScreenState extends State<BookingScreen> {
       backgroundColor: AppColors.background,
       appBar: AppBar(
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back_ios_new_rounded, size: 20),
+          icon: const Icon(Icons.arrow_back_ios_new_rounded, size: 18),
           onPressed: () => Navigator.pop(context),
         ),
-        title: const Text('Xác nhận đặt xe'),
+        title: const Text('XÁC NHẬN ĐẶT XE'),
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.fromLTRB(20, 10, 20, 120),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Car Summary Header Card
             _buildCarHeaderCard(),
-            const SizedBox(height: 24),
+            const SizedBox(height: 26),
 
-            // Rental Dates Selection
             const Text(
-              'Thời gian thuê xe',
+              'LỊCH TRÌNH THUÊ XE',
               style: TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.bold,
-                color: AppColors.textPrimary,
+                fontSize: 12,
+                fontWeight: FontWeight.w900,
+                color: AppColors.textMuted,
+                letterSpacing: 1.0,
               ),
             ),
             const SizedBox(height: 12),
             _buildDateSelector(),
-            const SizedBox(height: 24),
+            const SizedBox(height: 26),
 
-            // Additional Notes
             const Text(
-              'Ghi chú thêm (Tùy chọn)',
+              'GHI CHÚ ĐẶC BIỆT (TÙY CHỌN)',
               style: TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.bold,
-                color: AppColors.textPrimary,
+                fontSize: 12,
+                fontWeight: FontWeight.w900,
+                color: AppColors.textMuted,
+                letterSpacing: 1.0,
               ),
             ),
             const SizedBox(height: 12),
             CustomTextField(
               controller: noteController,
-              hintText: 'Yêu cầu điểm giao nhận, thời gian cụ thể...',
+              hintText: 'Yêu cầu điểm giao nhận, giờ nhận cụ thể...',
               maxLines: 3,
             ),
-            const SizedBox(height: 28),
+            const SizedBox(height: 26),
 
-            // Price Breakdown Card
             _buildPriceBreakdownCard(),
           ],
         ),
@@ -240,8 +293,8 @@ class _BookingScreenState extends State<BookingScreen> {
             child: widget.car.image.isNotEmpty
                 ? Image.network(
                     widget.car.image,
-                    width: 85,
-                    height: 75,
+                    width: 90,
+                    height: 76,
                     fit: BoxFit.cover,
                     errorBuilder: (_, _, _) => _carPlaceholder(),
                   )
@@ -253,27 +306,32 @@ class _BookingScreenState extends State<BookingScreen> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 8,
+                    vertical: 3,
+                  ),
                   decoration: BoxDecoration(
-                    color: AppColors.primary.withAlpha(40),
+                    color: AppColors.primary.withAlpha(28),
                     borderRadius: BorderRadius.circular(6),
                   ),
                   child: Text(
                     widget.car.brand.toUpperCase(),
                     style: const TextStyle(
-                      color: AppColors.secondary,
+                      color: AppColors.primary,
                       fontSize: 10,
-                      fontWeight: FontWeight.w800,
+                      fontWeight: FontWeight.w900,
+                      letterSpacing: 0.6,
                     ),
                   ),
                 ),
-                const SizedBox(height: 4),
+                const SizedBox(height: 5),
                 Text(
                   widget.car.name,
                   style: const TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold,
+                    fontSize: 17,
+                    fontWeight: FontWeight.w900,
                     color: AppColors.textPrimary,
+                    letterSpacing: -0.4,
                   ),
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
@@ -283,7 +341,7 @@ class _BookingScreenState extends State<BookingScreen> {
                   CurrencyFormatter.formatPerDay(widget.car.pricePerDay),
                   style: const TextStyle(
                     fontSize: 13,
-                    fontWeight: FontWeight.w700,
+                    fontWeight: FontWeight.w800,
                     color: AppColors.secondary,
                   ),
                 ),
@@ -297,8 +355,8 @@ class _BookingScreenState extends State<BookingScreen> {
 
   Widget _carPlaceholder() {
     return Container(
-      width: 85,
-      height: 75,
+      width: 90,
+      height: 76,
       color: AppColors.surfaceLight,
       child: const Icon(
         Icons.directions_car_rounded,
@@ -318,14 +376,34 @@ class _BookingScreenState extends State<BookingScreen> {
       ),
       child: Column(
         children: [
+          if (isAvailabilityLoading)
+            const Padding(
+              padding: EdgeInsets.only(bottom: 12),
+              child: Row(
+                children: [
+                  SizedBox(
+                    width: 14,
+                    height: 14,
+                    child: CircularProgressIndicator(strokeWidth: 2),
+                  ),
+                  SizedBox(width: 8),
+                  Text(
+                    'Đang tải lịch đặt xe...',
+                    style: TextStyle(color: AppColors.textMuted, fontSize: 12),
+                  ),
+                ],
+              ),
+            ),
+          if (!isAvailabilityLoading && bookedPeriods.isNotEmpty)
+            _buildBookedPeriods(),
           Row(
             children: [
               Expanded(
                 child: _buildDateTile(
-                  title: 'Ngày nhận xe',
+                  title: 'NHẬN XE',
                   dateStr: formatDate(startDate),
                   isSelected: startDate != null,
-                  onTap: selectStartDate,
+                  onTap: isAvailabilityLoading ? () {} : selectStartDate,
                 ),
               ),
               Container(
@@ -333,21 +411,21 @@ class _BookingScreenState extends State<BookingScreen> {
                 padding: const EdgeInsets.all(8),
                 decoration: BoxDecoration(
                   color: AppColors.surfaceLight,
-                  shape: BoxShape.circle,
+                  borderRadius: BorderRadius.circular(10),
                   border: Border.all(color: AppColors.surfaceBorder),
                 ),
                 child: const Icon(
                   Icons.arrow_forward_rounded,
                   size: 16,
-                  color: AppColors.secondary,
+                  color: AppColors.primary,
                 ),
               ),
               Expanded(
                 child: _buildDateTile(
-                  title: 'Ngày trả xe',
+                  title: 'TRẢ XE',
                   dateStr: formatDate(endDate),
                   isSelected: endDate != null,
-                  onTap: selectEndDate,
+                  onTap: isAvailabilityLoading ? () {} : selectEndDate,
                 ),
               ),
             ],
@@ -355,30 +433,82 @@ class _BookingScreenState extends State<BookingScreen> {
           if (totalDays > 0) ...[
             const SizedBox(height: 14),
             Container(
-              padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+              padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 9),
               decoration: BoxDecoration(
-                color: AppColors.emerald.withAlpha(25),
+                color: AppColors.emerald.withAlpha(24),
                 borderRadius: BorderRadius.circular(10),
-                border: Border.all(color: AppColors.emerald.withAlpha(70)),
+                border: Border.all(color: AppColors.emerald.withAlpha(80)),
               ),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  const Icon(Icons.check_circle_outline_rounded,
-                      size: 16, color: AppColors.emerald),
+                  const Icon(
+                    Icons.bolt_rounded,
+                    size: 16,
+                    color: AppColors.emerald,
+                  ),
                   const SizedBox(width: 6),
                   Text(
-                    'Thời lượng thuê: $totalDays ngày ($totalDays đêm)',
+                    'TỔNG THỜI LƯỢNG: $totalDays NGÀY ($totalDays ĐÊM)',
                     style: const TextStyle(
                       color: AppColors.emerald,
-                      fontSize: 13,
-                      fontWeight: FontWeight.bold,
+                      fontSize: 11,
+                      fontWeight: FontWeight.w900,
+                      letterSpacing: 0.5,
                     ),
                   ),
                 ],
               ),
             ),
           ],
+        ],
+      ),
+    );
+  }
+
+  Widget _buildBookedPeriods() {
+    return Container(
+      width: double.infinity,
+      margin: const EdgeInsets.only(bottom: 12),
+      padding: const EdgeInsets.all(12),
+      decoration: BoxDecoration(
+        color: AppColors.rose.withAlpha(18),
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: AppColors.rose.withAlpha(70)),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const Row(
+            children: [
+              Icon(Icons.event_busy_rounded, size: 16, color: AppColors.rose),
+              SizedBox(width: 6),
+              Text(
+                'NGÀY ĐÃ CÓ LỊCH',
+                style: TextStyle(
+                  color: AppColors.rose,
+                  fontSize: 11,
+                  fontWeight: FontWeight.w900,
+                  letterSpacing: 0.5,
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 7),
+          Text(
+            bookedPeriods.map(formatBookedPeriod).join('  •  '),
+            style: const TextStyle(
+              color: AppColors.textSecondary,
+              fontSize: 12,
+              fontWeight: FontWeight.w600,
+              height: 1.4,
+            ),
+          ),
+          const SizedBox(height: 5),
+          const Text(
+            'Các ngày này sẽ không thể chọn trong lịch.',
+            style: TextStyle(color: AppColors.textMuted, fontSize: 11),
+          ),
         ],
       ),
     );
@@ -393,12 +523,12 @@ class _BookingScreenState extends State<BookingScreen> {
     return GestureDetector(
       onTap: onTap,
       child: Container(
-        padding: const EdgeInsets.all(12),
+        padding: const EdgeInsets.all(14),
         decoration: BoxDecoration(
           color: AppColors.surfaceLight,
           borderRadius: BorderRadius.circular(14),
           border: Border.all(
-            color: isSelected ? AppColors.secondary : AppColors.surfaceBorder,
+            color: isSelected ? AppColors.primary : AppColors.surfaceBorder,
             width: isSelected ? 1.5 : 1,
           ),
         ),
@@ -408,9 +538,10 @@ class _BookingScreenState extends State<BookingScreen> {
             Text(
               title,
               style: const TextStyle(
-                fontSize: 11,
+                fontSize: 10,
                 color: AppColors.textMuted,
-                fontWeight: FontWeight.w500,
+                fontWeight: FontWeight.w900,
+                letterSpacing: 0.8,
               ),
             ),
             const SizedBox(height: 6),
@@ -419,7 +550,7 @@ class _BookingScreenState extends State<BookingScreen> {
                 Icon(
                   Icons.calendar_today_rounded,
                   size: 14,
-                  color: isSelected ? AppColors.secondary : AppColors.textMuted,
+                  color: isSelected ? AppColors.primary : AppColors.textMuted,
                 ),
                 const SizedBox(width: 6),
                 Expanded(
@@ -427,8 +558,10 @@ class _BookingScreenState extends State<BookingScreen> {
                     dateStr,
                     style: TextStyle(
                       fontSize: 13,
-                      fontWeight: FontWeight.bold,
-                      color: isSelected ? Colors.white : AppColors.textMuted,
+                      fontWeight: FontWeight.w900,
+                      color: isSelected
+                          ? AppColors.textPrimary
+                          : AppColors.textMuted,
                     ),
                     overflow: TextOverflow.ellipsis,
                   ),
@@ -443,7 +576,7 @@ class _BookingScreenState extends State<BookingScreen> {
 
   Widget _buildPriceBreakdownCard() {
     return Container(
-      padding: const EdgeInsets.all(18),
+      padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
         color: AppColors.surface,
         borderRadius: BorderRadius.circular(18),
@@ -453,41 +586,40 @@ class _BookingScreenState extends State<BookingScreen> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           const Text(
-            'Bảng kê chi phí dự kiến',
+            'BẢNG KÊ CHI PHÍ DỰ KIẾN',
             style: TextStyle(
-              fontSize: 16,
-              fontWeight: FontWeight.bold,
-              color: AppColors.textPrimary,
+              fontSize: 12,
+              fontWeight: FontWeight.w900,
+              color: AppColors.textMuted,
+              letterSpacing: 0.8,
             ),
           ),
-          const SizedBox(height: 14),
+          const SizedBox(height: 16),
           _priceRow(
-            label: 'Đơn giá thuê',
+            label: 'Đơn giá thuê tiêu chuẩn',
             value: CurrencyFormatter.formatPerDay(widget.car.pricePerDay),
           ),
           const SizedBox(height: 10),
-          _priceRow(
-            label: 'Số ngày thuê',
-            value: '$totalDays ngày',
-          ),
+          _priceRow(label: 'Thời lượng thuê', value: '$totalDays ngày'),
           const SizedBox(height: 10),
           _priceRow(
-            label: 'Bảo hiểm vật chất',
-            value: 'Đã bao gồm',
+            label: 'Bảo hiểm chuyến đi',
+            value: 'MIỄN PHÍ',
             valueColor: AppColors.emerald,
           ),
-          const SizedBox(height: 14),
+          const SizedBox(height: 16),
           const Divider(height: 1, color: AppColors.surfaceBorder),
-          const SizedBox(height: 14),
+          const SizedBox(height: 16),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               const Text(
-                'Tổng thanh toán',
+                'TỔNG TẠM TÍNH',
                 style: TextStyle(
-                  fontSize: 15,
-                  fontWeight: FontWeight.bold,
+                  fontSize: 13,
+                  fontWeight: FontWeight.w900,
                   color: AppColors.textPrimary,
+                  letterSpacing: 0.5,
                 ),
               ),
               Text(
@@ -495,7 +627,7 @@ class _BookingScreenState extends State<BookingScreen> {
                 style: const TextStyle(
                   fontSize: 20,
                   fontWeight: FontWeight.w900,
-                  color: AppColors.secondary,
+                  color: AppColors.primary,
                   letterSpacing: -0.5,
                 ),
               ),
@@ -516,16 +648,13 @@ class _BookingScreenState extends State<BookingScreen> {
       children: [
         Text(
           label,
-          style: const TextStyle(
-            fontSize: 13,
-            color: AppColors.textSecondary,
-          ),
+          style: const TextStyle(fontSize: 13, color: AppColors.textSecondary),
         ),
         Text(
           value,
           style: TextStyle(
             fontSize: 13,
-            fontWeight: FontWeight.w600,
+            fontWeight: FontWeight.w800,
             color: valueColor ?? AppColors.textPrimary,
           ),
         ),
@@ -543,7 +672,7 @@ class _BookingScreenState extends State<BookingScreen> {
         ),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withAlpha(120),
+            color: Colors.black.withAlpha(150),
             blurRadius: 20,
             offset: const Offset(0, -6),
           ),
@@ -558,15 +687,20 @@ class _BookingScreenState extends State<BookingScreen> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 const Text(
-                  'Tổng cộng',
-                  style: TextStyle(fontSize: 12, color: AppColors.textMuted),
+                  'TỔNG THANH TOÁN',
+                  style: TextStyle(
+                    fontSize: 10,
+                    color: AppColors.textMuted,
+                    fontWeight: FontWeight.w900,
+                    letterSpacing: 0.6,
+                  ),
                 ),
                 Text(
                   CurrencyFormatter.format(estimatedTotal),
                   style: const TextStyle(
                     fontSize: 20,
                     fontWeight: FontWeight.w900,
-                    color: AppColors.secondary,
+                    color: AppColors.textPrimary,
                   ),
                 ),
               ],
@@ -574,10 +708,10 @@ class _BookingScreenState extends State<BookingScreen> {
             const SizedBox(width: 20),
             Expanded(
               child: CustomButton(
-                text: 'Xác nhận đặt xe',
+                text: 'XÁC NHẬN ĐẶT XE',
                 isLoading: isLoading,
                 onPressed: submitBooking,
-                icon: Icons.check_circle_rounded,
+                icon: Icons.check_rounded,
               ),
             ),
           ],

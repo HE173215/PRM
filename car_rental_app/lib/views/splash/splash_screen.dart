@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+
 import '../../services/auth_service.dart';
 import '../../utils/app_colors.dart';
 
@@ -22,19 +23,13 @@ class _SplashScreenState extends State<SplashScreen>
 
     _animController = AnimationController(
       vsync: this,
-      duration: const Duration(milliseconds: 1200),
+      duration: const Duration(milliseconds: 1000),
     );
 
-    _fadeAnim = CurvedAnimation(
-      parent: _animController,
-      curve: Curves.easeIn,
-    );
+    _fadeAnim = CurvedAnimation(parent: _animController, curve: Curves.easeOut);
 
-    _scaleAnim = Tween<double>(begin: 0.85, end: 1.0).animate(
-      CurvedAnimation(
-        parent: _animController,
-        curve: Curves.easeOutCubic,
-      ),
+    _scaleAnim = Tween<double>(begin: 0.9, end: 1.0).animate(
+      CurvedAnimation(parent: _animController, curve: Curves.easeOutCubic),
     );
 
     _animController.forward();
@@ -48,7 +43,6 @@ class _SplashScreenState extends State<SplashScreen>
   }
 
   Future<void> checkLogin() async {
-    // Cho phép hiển thị splash tối thiểu 1.5s để tạo trải nghiệm mượt mà
     await Future.delayed(const Duration(milliseconds: 1500));
     if (!mounted) return;
 
@@ -80,28 +74,28 @@ class _SplashScreenState extends State<SplashScreen>
       backgroundColor: AppColors.background,
       body: Stack(
         children: [
-          // Background Glow Orbs
+          // Neo-minimalist ambient accents
           Positioned(
-            top: -100,
-            right: -100,
+            top: -120,
+            right: -120,
             child: Container(
-              width: 320,
-              height: 320,
+              width: 340,
+              height: 340,
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
-                color: AppColors.primary.withAlpha(40),
+                color: AppColors.primary.withAlpha(28),
               ),
             ),
           ),
           Positioned(
-            bottom: -60,
-            left: -60,
+            bottom: -100,
+            left: -100,
             child: Container(
-              width: 260,
-              height: 260,
+              width: 280,
+              height: 280,
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
-                color: AppColors.secondary.withAlpha(30),
+                color: AppColors.secondary.withAlpha(20),
               ),
             ),
           ),
@@ -115,27 +109,29 @@ class _SplashScreenState extends State<SplashScreen>
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    // Brand Icon Container
+                    // Geometric Emblem
                     Container(
-                      padding: const EdgeInsets.all(26),
+                      width: 100,
+                      height: 100,
                       decoration: BoxDecoration(
-                        gradient: AppColors.primaryGradient,
-                        shape: BoxShape.circle,
+                        color: AppColors.surface,
+                        borderRadius: BorderRadius.circular(28),
+                        border: Border.all(color: AppColors.primary, width: 2),
                         boxShadow: [
                           BoxShadow(
-                            color: AppColors.primary.withAlpha(120),
+                            color: AppColors.primary.withAlpha(80),
                             blurRadius: 36,
-                            offset: const Offset(0, 10),
+                            offset: const Offset(0, 12),
                           ),
                         ],
                       ),
                       child: const Icon(
-                        Icons.directions_car_filled_rounded,
-                        size: 64,
-                        color: Colors.white,
+                        Icons.bolt_rounded,
+                        size: 56,
+                        color: AppColors.primary,
                       ),
                     ),
-                    const SizedBox(height: 30),
+                    const SizedBox(height: 28),
 
                     // App Title
                     RichText(
@@ -143,48 +139,62 @@ class _SplashScreenState extends State<SplashScreen>
                       text: const TextSpan(
                         children: [
                           TextSpan(
-                            text: 'LUXURY ',
+                            text: 'VELO',
                             style: TextStyle(
-                              fontSize: 30,
+                              fontSize: 36,
                               fontWeight: FontWeight.w900,
-                              letterSpacing: 3,
-                              color: Colors.white,
+                              letterSpacing: -1,
+                              color: AppColors.textPrimary,
                             ),
                           ),
                           TextSpan(
-                            text: 'RENTAL',
+                            text: 'DRIVE',
                             style: TextStyle(
-                              fontSize: 30,
-                              fontWeight: FontWeight.w300,
-                              letterSpacing: 3,
-                              color: AppColors.secondary,
+                              fontSize: 36,
+                              fontWeight: FontWeight.w900,
+                              letterSpacing: -1,
+                              color: AppColors.primary,
                             ),
                           ),
                         ],
                       ),
                     ),
-                    const SizedBox(height: 12),
+                    const SizedBox(height: 10),
 
-                    // Slogan
-                    const Text(
-                      'Khởi đầu mọi hành trình đẳng cấp',
-                      style: TextStyle(
-                        fontSize: 14,
-                        color: AppColors.textSecondary,
-                        letterSpacing: 0.8,
-                        fontWeight: FontWeight.w400,
+                    // Tagline Pill
+                    Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 14,
+                        vertical: 6,
+                      ),
+                      decoration: BoxDecoration(
+                        color: AppColors.surface,
+                        borderRadius: BorderRadius.circular(8),
+                        border: Border.all(color: AppColors.surfaceBorder),
+                      ),
+                      child: const Text(
+                        'NEXT-GEN MOBILITY PLATFORM',
+                        style: TextStyle(
+                          fontSize: 10,
+                          color: AppColors.secondary,
+                          letterSpacing: 1.5,
+                          fontWeight: FontWeight.w900,
+                        ),
                       ),
                     ),
-                    const SizedBox(height: 60),
+                    const SizedBox(height: 54),
 
-                    // Loading indicator
+                    // Minimalist Progress Bar
                     const SizedBox(
-                      width: 28,
-                      height: 28,
-                      child: CircularProgressIndicator(
-                        strokeWidth: 2.5,
-                        valueColor: AlwaysStoppedAnimation<Color>(
-                          AppColors.secondary,
+                      width: 120,
+                      child: ClipRRect(
+                        borderRadius: BorderRadius.all(Radius.circular(4)),
+                        child: LinearProgressIndicator(
+                          minHeight: 3,
+                          backgroundColor: AppColors.surfaceLight,
+                          valueColor: AlwaysStoppedAnimation<Color>(
+                            AppColors.primary,
+                          ),
                         ),
                       ),
                     ),
@@ -196,16 +206,17 @@ class _SplashScreenState extends State<SplashScreen>
 
           // Version note bottom
           const Positioned(
-            bottom: 24,
+            bottom: 28,
             left: 0,
             right: 0,
             child: Text(
-              'Phiên bản 1.0.0',
+              'SYS.VER // 2.0 NEO',
               textAlign: TextAlign.center,
               style: TextStyle(
                 color: AppColors.textMuted,
-                fontSize: 12,
-                fontWeight: FontWeight.w500,
+                fontSize: 10,
+                fontWeight: FontWeight.w800,
+                letterSpacing: 1.2,
               ),
             ),
           ),

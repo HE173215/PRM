@@ -12,7 +12,13 @@ const bookingStatuses = [
   "cancelled",
 ];
 
-const paymentStatuses = ["unpaid", "paid", "failed", "refunded"];
+const paymentStatuses = [
+  "unpaid",
+  "paid",
+  "failed",
+  "refund_requested",
+  "refunded",
+];
 
 const isValidId = (id) => mongoose.Types.ObjectId.isValid(id);
 
